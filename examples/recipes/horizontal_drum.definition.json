@@ -1,0 +1,131 @@
+{
+  "schema": "skid.equipment.definition/1",
+  "id": "horizontal-drum",
+  "name": "Horizontal drum",
+  "function": "Illustrative liquid hold-up vessel; operating duty unknown.",
+  "geometry": {
+    "schema": "skid.geometry.recipe/1",
+    "id": "horizontal-drum",
+    "title": "Horizontal drum",
+    "description": "A horizontal drum on two saddles with a top DN50 inlet and an end DN50 outlet, composed only from the existing part vocabulary (revolve, prism, box, instances, flanged_nozzle, bolt). Illustrative geometry with explicit ports, parameters and assumptions; not a vessel design and not evidence of general equipment generation.",
+    "length_unit": "mm",
+    "frame": "Local frame: origin on the floor below the shell centre, shell axis along +x, +z up. Expression lengths are millimetres; parameters are declared in metres.",
+    "parameters": {
+      "shell_length": {"value": 1.4, "unit": "m", "minimum": 0.8, "maximum": 2.6, "assumption_id": "asm-drum-dimensions"},
+      "shell_diameter": {"value": 0.6, "unit": "m", "minimum": 0.4, "maximum": 1.2, "assumption_id": "asm-drum-dimensions"},
+      "centreline_height": {"value": 0.75, "unit": "m", "minimum": 0.5, "maximum": 1.6, "assumption_id": "asm-drum-dimensions"},
+      "inlet_offset": {"value": 0.6, "unit": "m", "minimum": 0.1, "maximum": 2.4, "assumption_id": "asm-drum-ports"}
+    },
+    "derived": [
+      ["L", "=shell_length"],
+      ["D", "=shell_diameter"],
+      ["R", "=shell_diameter / 2"],
+      ["Hc", "=centreline_height"],
+      ["Hd", "=R / 2"],
+      ["xL", "=-L / 2"],
+      ["xR", "=L / 2"],
+      ["xs", "=0.3 * L"],
+      ["x_in", "=xL + inlet_offset"]
+    ],
+    "constraints": [
+      {"at_least_zero": "=Hc - R - 150", "message": "saddles need at least 150 mm below the shell"},
+      {"at_least_zero": "=inlet_offset - 120", "message": "inlet must be at least 120 mm from the left tangent line"},
+      {"at_least_zero": "=L - inlet_offset - 120", "message": "inlet must be at least 120 mm from the right tangent line"},
+      {"at_least_zero": "=abs(x_in + xs) - 110", "message": "inlet must clear the left saddle by 110 mm"},
+      {"at_least_zero": "=abs(x_in - xs) - 110", "message": "inlet must clear the right saddle by 110 mm"}
+    ],
+    "ports": {
+      "inlet": {"position": ["=x_in", 0, "=Hc + R + 150"], "direction": [0, 0, 1], "nominal_diameter_mm": 50,
+                "component": "nozzle/inlet", "assumption_id": "asm-drum-ports"},
+      "outlet": {"position": ["=xR + Hd + 130", 0, "=Hc"], "direction": [1, 0, 0], "nominal_diameter_mm": 50,
+                 "component": "nozzle/outlet", "assumption_id": "asm-drum-ports"}
+    },
+    "components": [
+      {
+        "key": "body", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-drum-dimensions", "rcp-heads-approximation", "rcp-appearance"],
+        "parts": [
+          {"part": "revolve", "origin": [0, 0, "=Hc"], "axis": [1, 0, 0], "ref": [0, 0, 1], "profile": [
+            [0, "=xL - Hd"], ["=R * sin(22.5)", "=xL - Hd * cos(22.5)"], ["=R * sin(45)", "=xL - Hd * cos(45)"],
+            ["=R * sin(67.5)", "=xL - Hd * cos(67.5)"], ["=R", "=xL"], ["=R", "=xR"],
+            ["=R * sin(67.5)", "=xR + Hd * cos(67.5)"], ["=R * sin(45)", "=xR + Hd * cos(45)"],
+            ["=R * sin(22.5)", "=xR + Hd * cos(22.5)"], [0, "=xR + Hd"]]},
+          {"part": "instances", "offsets": [["=xL", 0, 0], ["=xR", 0, 0]], "item":
+            {"part": "revolve", "origin": [0, 0, "=Hc"], "axis": [1, 0, 0], "ref": [0, 0, 1], "profile": [
+              ["=R - 1", -2.5], ["=R + 1.5", -2.5], ["=R + 1.5", 2.5], ["=R - 1", 2.5]]}}
+        ]
+      },
+      {
+        "key": "support", "material": "base_paint", "display_only": false,
+        "assumptions": ["asm-drum-dimensions", "rcp-saddles", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "prism", "origin": [-7, 0, 0], "normal": [1, 0, 0], "u_axis": [0, 1, 0], "depth": 14, "outline": [
+              ["=-0.8 * R", 12], ["=0.8 * R", 12], ["=0.8 * R", "=Hc - sqrt(R * R - (0.8 * R) ** 2) + 4"],
+              ["=0.4 * R", "=Hc - sqrt(R * R - (0.4 * R) ** 2) + 4"], [0, "=Hc - R + 4"],
+              ["=-0.4 * R", "=Hc - sqrt(R * R - (0.4 * R) ** 2) + 4"],
+              ["=-0.8 * R", "=Hc - sqrt(R * R - (0.8 * R) ** 2) + 4"]]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, 0, 6], "size": [180, "=0.9 * D", 12]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, "=0.45 * R", "=(Hc - R) / 2 + 6"], "size": [90, 10, "=Hc - R - 20"]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, "=-0.45 * R", "=(Hc - R) / 2 + 6"], "size": [90, 10, "=Hc - R - 20"]}}
+        ]
+      },
+      {
+        "key": "nozzle/inlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-drum-ports", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=x_in", 0, "=Hc + R + 150"], "direction": [0, 0, 1], "neck_length": 190,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "nozzle/outlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-drum-ports", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=xR + Hd + 130", 0, "=Hc"], "direction": [1, 0, 0], "neck_length": 160,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "fasteners", "material": "fastener_zinc", "display_only": false,
+        "assumptions": ["rcp-saddles", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [
+            ["=-xs - 60", "=-0.35 * D", 0], ["=-xs + 60", "=-0.35 * D", 0], ["=-xs - 60", "=0.35 * D", 0],
+            ["=-xs + 60", "=0.35 * D", 0], ["=xs - 60", "=-0.35 * D", 0], ["=xs + 60", "=-0.35 * D", 0],
+            ["=xs - 60", "=0.35 * D", 0], ["=xs + 60", "=0.35 * D", 0]], "item":
+            {"part": "bolt", "seat": [0, 0, 12], "axis": [0, 0, 1], "across_flats": 16, "height": 9, "stud_radius": 5,
+             "stud_length": 14}}
+        ]
+      }
+    ],
+    "assumptions": {
+      "asm-drum-dimensions": {"category": "illustrative_dimension",
+        "description": "Illustrative drum size: 1.4 m shell length, 0.6 m diameter, 0.75 m centreline height by default. Example values for demonstrating composition; no capacity, pressure or material is implied."},
+      "asm-drum-ports": {"category": "illustrative_dimension",
+        "description": "Two DN50 ports: a top inlet inlet_offset (0.6 m by default) from the left tangent line with its flange face 150 mm above the shell, and an end outlet on the right head axis 130 mm beyond the head. Liquid service, duty and ratings unknown."},
+      "rcp-heads-approximation": {"category": "approximation",
+        "description": "2:1 semi-elliptical heads approximated by a revolved polygon with five points per quadrant; tangent-line seam bands are cosmetic."},
+      "rcp-saddles": {"category": "illustrative_detail",
+        "description": "Two fabricated saddles at 30 % of the shell length either side of centre, each with a web, two stiffeners, a base plate and four anchor bolts. Not a support design."},
+      "rcp-flange-dn50-like": {"category": "illustrative_detail",
+        "description": "DN50 flange proportions shared with the skid recipes (OD 150 mm, 18 mm thick, four 18 mm holes on a 120 mm circle). No rating or standard selected."},
+      "rcp-appearance": {"category": "appearance",
+        "description": "Colours, metalness and roughness are appearance-only and assert no material of construction."}
+    }
+  },
+  "ports": {
+    "inlet": {"direction": "in", "required": true, "service": "liquid"},
+    "outlet": {"direction": "out", "required": true, "service": "liquid"}
+  },
+  "symbol": {"shape": "horizontal_vessel", "anchors": {"inlet": [-60, 0], "outlet": [60, 0]}},
+  "unknowns": [
+    "Pressure, temperature, capacity, material and ratings are unspecified.",
+    "Process duty, liquid identity, level control and venting are not modeled."
+  ]
+}

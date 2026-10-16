@@ -1,0 +1,49 @@
+{
+ "_source": "Fields the follow-up UI uses, copied unchanged from one captured real planner reply (status questions, 2026-10-14) about revision 2 of the synthetic pump-skid example. The original capture is not included. Preserved as UI test data; the questions are model output, not independent engineering advice. See docs/FIXTURE_PROVENANCE.md.",
+ "mode": "engineering",
+ "status": "questions",
+ "text": "Assess what information is missing to size TK-101 and P-101 for this process. Do not choose dimensions or make changes; ask the required engineering questions.",
+ "expected_revision": 2,
+ "questions": [
+  {
+   "id": "fluid-properties",
+   "question": "What liquid do TK-101 (ent-tank) and P-101 (ent-pump) handle, and what are its properties? Please give: normal, minimum and maximum operating temperature; density or SG; viscosity; vapour pressure at maximum temperature; and any solids, entrained gas, foaming, corrosivity, toxicity or flammability.",
+   "reason": "Density and viscosity convert head to pressure and set friction losses and any viscous pump derating. Vapour pressure sets NPSH available. Hazards drive tank venting and pump sealing. The model records none of these (asm-dn50-liquid-service)."
+  },
+  {
+   "id": "pump-flow-duty",
+   "question": "What flow must P-101 deliver: normal, rated (design) and minimum flow, with units? Is operation continuous, batch or intermittent? What margins on rated flow and head should the selection use?",
+   "reason": "Rated flow is the primary sizing input for P-101 and sets the TK-101 draw-down rate. Operating mode and margins fix the rated point and turndown. No duty is recorded in the model."
+  },
+  {
+   "id": "tank-function-volume",
+   "question": "What is TK-101's role (storage/feed, surge/buffer, batch or break tank), and what working volume or hold-up time at rated flow does it need? How and at what rate is it filled (no inlet is modeled)? What are the normal, maximum and minimum operating liquid levels and the required freeboard?",
+   "reason": "Working volume, fill and draw rates and the level range set TK-101's diameter and height. The present 0.8 m x 1.2 m shell (about 0.60 m3 gross, asm-tank-dimensions) is illustrative, not a sizing."
+  },
+  {
+   "id": "suction-conditions",
+   "question": "Is TK-101 open/vented, gas-blanketed or pressurized, and at what operating and design pressure and temperature? What is the site elevation or atmospheric pressure? What minimum liquid level must be kept above the tank outlet and pump suction (both on centreline z = 0.2 m)?",
+   "reason": "NPSH available is suction pressure plus minimum static head, minus vapour pressure and suction losses (conn-suction-1, conn-suction-2). It must exceed P-101's NPSH required with margin. Tank pressure also governs how the tank is built."
+  },
+  {
+   "id": "discharge-conditions",
+   "question": "What does the destination beyond OUT-101 require: delivery pressure (gauge or absolute), destination elevation or liquid level relative to the skid deck (z = 0), and the downstream piping, fittings and equipment? Alternatively, what pressure is required at OUT-101 at rated flow?",
+   "reason": "Differential head is the sum of pressure, static and friction terms. The model stops at the OUT-101 boundary (ent-outlet-boundary, asm-boundary-marker), so the discharge side of the head calculation is undefined."
+  },
+  {
+   "id": "line-losses",
+   "question": "For the loss calculations: is DN50 fixed for every line? Which pipe schedule or inside diameter and which velocity limits apply? Are pressure-drop data (Cv/Kv or vendor curves) available for HV-101, HV-102 and NRV-101 (ent-suction-valve, ent-discharge-valve, ent-check-valve)?",
+   "reason": "Friction losses depend on the actual bore, fittings and valve resistance; asm-dn50-pipe fixes only a 0.0603 m OD, not a schedule. This tool cannot change DN, so a different line size would be outside its scope."
+  },
+  {
+   "id": "layout-limits",
+   "question": "What limits apply on the skid: maximum footprint and height, preferred TK-101 height-to-diameter ratio, clearances and maintenance access? If sizes change, may the tank and pump positions (asm-skid-layout) and the manual discharge route (asm-manual-route) change?",
+   "reason": "Many diameter/height pairs give the same volume, and space limits decide which one. Resizing ent-tank or ent-pump moves ports, so conn-suction-1, conn-suction-2 and conn-discharge-1 would need rerouting."
+  },
+  {
+   "id": "selection-basis",
+   "question": "What selection basis applies: codes or standards for the tank and pump, materials of construction, pump type and seal preference, sparing (single or duty/standby P-101), motor supply (voltage, frequency, fixed speed or VFD) and hazardous-area classification?",
+   "reason": "These set the pump frame, motor and real envelope (asm-pump-dimensions is not a vendor selection), and the tank wall and nozzle design. A standby pump or a tank inlet would need new branches, which this tool cannot add."
+  }
+ ]
+}

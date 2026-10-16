@@ -1,0 +1,9 @@
+{
+ "_comment": "Expected identity and counts for scripts/reference.py on examples/pump_skid.json. Counts, not geometry: CAD figures were first recorded for the unchanged fixture in the October 2026 interactive implementation (67 STEP parts / 350 solids / 68 display components / 10 port flange faces / 12 envelopes) and are rechecked on every run.",
+ "project_id": "project-pump-skid",
+ "model": {"entities": 8, "ports": 10, "connections": 5, "assumptions": 12},
+ "legend_keys": 16,
+ "index_items": 13,
+ "nozzle_move": {"entity_id": "ent-tank", "parameter": "outlet_height", "from_m": 0.2, "outlet_height_m": 0.3},
+ "cad": {"parts": 67, "solids": 350, "display_components": 68, "ports": 10, "envelope_checks": 12}
+}

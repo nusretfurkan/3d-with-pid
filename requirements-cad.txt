@@ -1,0 +1,5 @@
+# Isolated optional runtime for the version-0.2 CAD/display workflow.
+# The standard-library core and existing Blender baseline do not require it.
+# Transitive versions are constrained to the audited macOS arm64 / Python 3.12 resolution (see that file).
+-c constraints-cad.txt
+cadquery==2.6.1

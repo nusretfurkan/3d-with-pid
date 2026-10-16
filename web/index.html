@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Skid workspace · 3D and P&amp;ID</title>
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/interaction.css">
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/build/three.module.min.js", "three/addons/": "/vendor/three/examples/jsm/" } }
+</script>
+<script type="module" src="/js/app.js"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-mark" viewBox="0 0 24 24"><path d="M3 17.5 12 21l9-3.5V7L12 3.5 3 7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 7l9 3.5L21 7M12 10.5V21" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10.5" r="1.9" fill="#e8a317"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 7 4.5 11.5 9 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-redo" viewBox="0 0 24 24"><path d="m15 7 4.5 4.5L15 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M8 4v5h7V4M8 20v-6h8v6" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+    <symbol id="i-reopen" viewBox="0 0 24 24"><path d="M4 7h6l2 2h8v10H4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 17v-5m-2.5 2.5L12 12l2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-build" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0 1 13-5.1M19.5 12a7.5 7.5 0 0 1-13 5.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M18 3.5v4h-4M6 20.5v-4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cancel" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-max" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-min" viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 9h8v6H8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 1.6"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-label" viewBox="0 0 24 24"><path d="M5 19 10 13" stroke="currentColor" stroke-width="1.6"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><rect x="10" y="5" width="10" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-edges" viewBox="0 0 24 24"><path d="M12 3.5 20 8v8l-8 4.5L4 16V8z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M4 8l8 4.5L20 8M12 12.5v8" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v10m-4-4 4 4 4-4M5 18.5h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-zoom-in" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15 15 5 5M8 10.5h5M10.5 8v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-zoom-out" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m15 15 5 5M8 10.5h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14.5 4.5v15" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-dock" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 14.5h17" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 15V6a1 1 0 0 1 1-1h9" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-pick" viewBox="0 0 24 24"><path d="M12 3v5m0 8v5M3 12h5m8 0h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12h12m-5-5 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5v14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m14.5 5.5 4 4L9 19H5v-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m12.5 7.5 4 4" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="5.5" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18.5" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 18H13a2.5 2.5 0 0 0 2.5-2.5v-7A2.5 2.5 0 0 1 18 6h-1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-layout2" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 5v14" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-layout4" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 5v14M3.5 12h17" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-focusmode" viewBox="0 0 24 24"><path d="M4 8.5V4.5h4M20 8.5V4.5h-4M4 15.5v4h4M20 15.5v4h-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="8.5" width="8" height="7" rx=".8" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-exitfocus" viewBox="0 0 24 24"><path d="M8.5 4v4.5H4M15.5 4v4.5H20M8.5 20v-4.5H4M15.5 20v-4.5H20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-ask" viewBox="0 0 24 24"><path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M10.2 8.9a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="13.6" r=".9" fill="currentColor"/></symbol>
+    <symbol id="i-axes" viewBox="0 0 24 24"><path d="M6 18V4.5M6 18h13.5M6 18l-3.2 3.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m3.8 6.8 2.2-2.3 2.2 2.3M17.2 15.8l2.3 2.2-2.3 2.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 14h6M10 10h6M14 8v8M10 8v8" stroke="currentColor" stroke-width="1" opacity=".55"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="m9.5 5.5 2.5-2.5 2.5 2.5M9.5 18.5 12 21l2.5-2.5M5.5 9.5 3 12l2.5 2.5M18.5 9.5 21 12l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx=".6" fill="currentColor" opacity=".35"/></symbol>
+    <symbol id="i-cube-iso" viewBox="0 0 24 24"><path d="M12 3.5 19.5 7.7v8.6L12 20.5l-7.5-4.2V7.7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M4.5 7.7 12 12l7.5-4.3M12 12v8.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  </defs>
+</svg>
+
+<header class="toolbar" role="banner">
+  <div class="brand"><svg class="icon mark" aria-hidden="true"><use href="#i-mark"/></svg><span>Skid workspace</span></div>
+  <div class="tb-group project" id="tb-project">
+    <span class="tb-label">Project</span>
+    <button type="button" class="tb-name" id="tb-project-name" aria-label="Rename project"><span class="tb-value" id="tb-project-id">—</span><svg class="icon pen" aria-hidden="true"><use href="#i-edit"/></svg></button>
+    <form class="tb-name-form" id="tb-name-form" hidden>
+      <input type="text" id="tb-name-input" aria-label="Project name" aria-describedby="tb-name-msg" autocomplete="off" spellcheck="false">
+      <button type="submit" class="tb-mini ok" id="tb-name-save" title="Save the name (Enter)" aria-label="Save project name"><svg class="icon"><use href="#i-check"/></svg></button>
+      <button type="button" class="tb-mini" id="tb-name-cancel" title="Cancel (Esc)" aria-label="Cancel renaming"><svg class="icon"><use href="#i-close"/></svg></button>
+      <div class="tb-name-msg" id="tb-name-msg" role="status" aria-live="polite" hidden></div>
+    </form>
+    <span class="tb-label">Revision</span><span class="tb-value rev" id="tb-revision">—</span>
+    <span class="tb-doc" id="tb-doc"></span>
+  </div>
+  <div class="tb-group status">
+    <span id="tb-sync" class="badge tone-none"><i class="dot"></i>Connecting</span>
+    <span id="tb-build" class="tb-build"></span>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-group actions" role="toolbar" aria-label="Project actions">
+    <button class="tb-btn" id="btn-undo" title="Undo (Ctrl/⌘ Z)"><svg class="icon"><use href="#i-undo"/></svg><span>Undo</span><em id="undo-count"></em></button>
+    <button class="tb-btn" id="btn-redo" title="Redo (Ctrl/⌘ Shift Z)"><svg class="icon"><use href="#i-redo"/></svg><span>Redo</span><em id="redo-count"></em></button>
+    <span class="tb-sep"></span>
+    <button class="tb-btn" id="btn-save" title="Confirm the saved file on disk for the current revision"><svg class="icon"><use href="#i-save"/></svg><span>Save</span></button>
+    <button class="tb-btn" id="btn-reopen" title="Reload the project file and its history from disk"><svg class="icon"><use href="#i-reopen"/></svg><span>Reopen</span></button>
+    <span class="tb-sep"></span>
+    <button class="tb-btn" id="btn-build" title="Generate all five outputs for the current revision"><svg class="icon"><use href="#i-build"/></svg><span>Rebuild</span></button>
+    <button class="tb-btn danger" id="btn-cancel" title="Cancel the running or queued build" hidden><svg class="icon"><use href="#i-cancel"/></svg><span>Cancel</span></button>
+    <span class="tb-sep"></span>
+    <div class="menu-wrap">
+      <button class="tb-btn" id="btn-downloads" aria-haspopup="true" aria-expanded="false" title="Download verified outputs"><svg class="icon"><use href="#i-download"/></svg><span>Outputs</span></button>
+      <div class="menu" id="menu-downloads" role="menu" hidden></div>
+    </div>
+    <span class="conn" id="tb-conn" title="Connection to the local service"><i></i></span>
+    <button class="tb-btn icon-only" id="btn-inspector" title="Show or hide the inspector"><svg class="icon"><use href="#i-panel"/></svg></button>
+    <button class="tb-btn icon-only" id="btn-dock" title="Show or hide activity and feedback"><svg class="icon"><use href="#i-dock"/></svg></button>
+    <span class="tb-sep"></span>
+    <div class="seg tb-seg" id="layout-seg" role="radiogroup" aria-label="View panes">
+      <button type="button" data-layout="2" role="radio" aria-checked="true" title="Two panes side by side" aria-label="Two panes"><svg class="icon"><use href="#i-layout2"/></svg></button>
+      <button type="button" data-layout="4" role="radio" aria-checked="false" title="Four panes, 2 × 2" aria-label="Four panes"><svg class="icon"><use href="#i-layout4"/></svg></button>
+    </div>
+    <button class="tb-btn icon-only" id="btn-focus" aria-pressed="false" title="Focus: show only the view panes (Esc returns)" aria-label="Focus on the view panes"><svg class="icon"><use href="#i-focusmode"/></svg></button>
+  </div>
+</header>
+
+<main class="workspace" id="workspace">
+  <section class="views" id="views" data-panes="2" aria-label="View panes"></section>
+
+  <aside class="inspector" id="inspector" aria-label="Inspector">
+    <div class="insp-scroll" id="insp-body"></div>
+  </aside>
+
+  <section class="dock" id="dock" aria-label="Activity and changes">
+    <div class="dock-pane" id="dock-activity">
+      <header class="pane-head"><span class="pane-title">Activity</span><span class="pane-meta" id="act-meta"></span></header>
+      <div class="act-artifacts" id="act-artifacts"></div>
+      <ol class="act-log" id="act-log" aria-live="polite"></ol>
+    </div>
+    <div class="dock-pane" id="dock-change">
+      <header class="pane-head">
+        <div class="tabs small" role="tablist" id="change-tabs">
+          <button role="tab" data-tab="feedback" class="on" aria-selected="true">Feedback</button>
+          <button role="tab" data-tab="command" aria-selected="false">Command JSON</button>
+        </div>
+        <span class="pane-meta" id="change-meta"></span>
+      </header>
+      <div class="change-panel change-entry" id="panel-feedback-entry"></div>
+      <div class="change-panel" id="panel-feedback"></div>
+      <div class="change-panel" id="panel-command" hidden></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="focus-bar" id="focus-bar" hidden>
+  <button type="button" class="focus-exit" id="btn-exit-focus" title="Exit focus (Esc)" aria-label="Exit focus and restore the panels"><svg class="icon"><use href="#i-exitfocus"/></svg><span>Exit focus</span></button>
+</div>
+<div class="conn-banner" id="conn-banner" role="status" hidden></div>
+<button type="button" class="ask-fab" id="btn-ask" aria-controls="assistant" aria-expanded="false" aria-haspopup="dialog" aria-describedby="ask-fab-help" title="Ask about the project, or request a change. Drag, or Shift+Arrow keys, to move this button; Shift+Home puts it back. Esc closes the assistant; drafts are kept."><svg class="icon"><use href="#i-ask"/></svg><span>Ask</span><i class="fab-dot" aria-hidden="true"></i></button>
+<span class="sr-only" id="ask-fab-help">Opens the floating assistant. Drag it, or press Shift with the arrow keys, to move it; Shift+Home puts it back in the bottom-right corner.</span>
+<div class="assistant" id="assistant" role="dialog" aria-modal="false" aria-labelledby="asst-title" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+</body>
+</html>

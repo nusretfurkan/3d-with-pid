@@ -1,0 +1,212 @@
+{
+  "schema": "skid.equipment.definition/1",
+  "id": "shell-and-tube-exchanger",
+  "name": "Shell-and-tube heat exchanger",
+  "function": "Illustrative shell-and-tube heat exchanger: one liquid stream passes through the tubes (tube inlet to tube outlet) and a second liquid stream through the shell (shell inlet to shell outlet); the two circuits are kept separate. Heat duty, sizing and thermal or mechanical design are unknown and not verified.",
+  "geometry": {
+    "schema": "skid.geometry.recipe/1",
+    "id": "shell-and-tube-exchanger",
+    "title": "Shell-and-tube heat exchanger (illustrative)",
+    "description": "A horizontal shell between two clamped tubesheets, a front channel with a bolted flat cover carrying the tube-side nozzles, a rear return bonnet and two saddles, composed only from the existing part vocabulary (cylinder, revolve, prism, box, instances, flanged_nozzle, bolting, bolt). Four DN50 nozzles: tube inlet and tube outlet on the channel, shell inlet and shell outlet on the shell. Illustrative geometry with explicit ports, parameters and assumptions; tubes, baffles and pass partitions are internal and not modelled. Not an exchanger design.",
+    "length_unit": "mm",
+    "frame": "Local frame: origin on the floor below the shell centre, shell axis along +x (front channel at -x, rear bonnet at +x), +z up. Expression lengths are millimetres; parameters are declared in metres.",
+    "parameters": {
+      "shell_length": {"value": 1.6, "unit": "m", "minimum": 1.0, "maximum": 3.0, "assumption_id": "asm-hx-dimensions"},
+      "shell_diameter": {"value": 0.32, "unit": "m", "minimum": 0.22, "maximum": 0.6, "assumption_id": "asm-hx-dimensions"},
+      "centreline_height": {"value": 0.62, "unit": "m", "minimum": 0.5, "maximum": 1.2, "assumption_id": "asm-hx-dimensions"},
+      "channel_length": {"value": 0.3, "unit": "m", "minimum": 0.22, "maximum": 0.5, "assumption_id": "asm-hx-dimensions"},
+      "shell_nozzle_offset": {"value": 0.22, "unit": "m", "minimum": 0.15, "maximum": 1.2, "assumption_id": "asm-hx-nozzles"}
+    },
+    "derived": [
+      ["L", "=shell_length"],
+      ["D", "=shell_diameter"],
+      ["R", "=shell_diameter / 2"],
+      ["F", "=R + 45"],
+      ["Hc", "=centreline_height"],
+      ["Lc", "=channel_length"],
+      ["Hd", "=R / 2"],
+      ["xL", "=-L / 2"],
+      ["xR", "=L / 2"],
+      ["x0", "=xL - Lc"],
+      ["x_tube", "=xL - Lc / 2"],
+      ["x_shell_in", "=xR - shell_nozzle_offset"],
+      ["x_shell_out", "=xL + shell_nozzle_offset"],
+      ["xs", "=0.25 * L"],
+      ["z_top", "=Hc + R + 150"],
+      ["z_bottom", "=Hc - R - 150"],
+      ["x_bonnet", "=xR + 99"]
+    ],
+    "constraints": [
+      {"at_least_zero": "=z_bottom - 150", "message": "bottom nozzle flange faces need at least 150 mm above the floor"},
+      {"at_least_zero": "=Lc / 2 - 36 - 39 - 10", "message": "tube nozzles need 10 mm clear of the channel flanges"},
+      {"at_least_zero": "=shell_nozzle_offset - 36 - 39 - 10", "message": "shell nozzles need 10 mm clear of the shell flanges"},
+      {"at_least_zero": "=L - 2 * shell_nozzle_offset - 200", "message": "shell inlet and shell outlet need at least 200 mm between them along the shell"},
+      {"at_least_zero": "=abs(x_shell_in + xs) - 75 - 45 - 10", "message": "the bottom shell inlet must clear the front saddle by 10 mm"},
+      {"at_least_zero": "=abs(x_shell_in - xs) - 75 - 45 - 10", "message": "the bottom shell inlet must clear the rear saddle by 10 mm"}
+    ],
+    "ports": {
+      "tube_inlet": {"position": ["=x_tube", 0, "=z_bottom"], "direction": [0, 0, -1], "nominal_diameter_mm": 50,
+                     "component": "nozzle/tube_inlet", "assumption_id": "asm-hx-nozzles"},
+      "tube_outlet": {"position": ["=x_tube", 0, "=z_top"], "direction": [0, 0, 1], "nominal_diameter_mm": 50,
+                      "component": "nozzle/tube_outlet", "assumption_id": "asm-hx-nozzles"},
+      "shell_inlet": {"position": ["=x_shell_in", 0, "=z_bottom"], "direction": [0, 0, -1], "nominal_diameter_mm": 50,
+                      "component": "nozzle/shell_inlet", "assumption_id": "asm-hx-nozzles"},
+      "shell_outlet": {"position": ["=x_shell_out", 0, "=z_top"], "direction": [0, 0, 1], "nominal_diameter_mm": 50,
+                       "component": "nozzle/shell_outlet", "assumption_id": "asm-hx-nozzles"}
+    },
+    "components": [
+      {
+        "key": "shell", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-dimensions", "rcp-hx-arrangement", "rcp-hx-joints", "rcp-appearance"],
+        "parts": [
+          {"part": "cylinder", "start": ["=xL + 39", 0, "=Hc"], "end": ["=xR - 39", 0, "=Hc"], "radius": "=R"},
+          {"part": "cylinder", "start": ["=xL + 15", 0, "=Hc"], "end": ["=xL + 39", 0, "=Hc"], "radius": "=F"},
+          {"part": "cylinder", "start": ["=xR - 39", 0, "=Hc"], "end": ["=xR - 15", 0, "=Hc"], "radius": "=F"}
+        ]
+      },
+      {
+        "key": "channel", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-dimensions", "rcp-hx-arrangement", "rcp-hx-joints", "rcp-appearance"],
+        "parts": [
+          {"part": "cylinder", "start": ["=x0 + 24", 0, "=Hc"], "end": ["=xL - 39", 0, "=Hc"], "radius": "=R"},
+          {"part": "cylinder", "start": ["=xL - 39", 0, "=Hc"], "end": ["=xL - 15", 0, "=Hc"], "radius": "=F"},
+          {"part": "cylinder", "start": ["=x0", 0, "=Hc"], "end": ["=x0 + 24", 0, "=Hc"], "radius": "=F"},
+          {"part": "cylinder", "start": ["=x0 - 28", 0, "=Hc"], "end": ["=x0", 0, "=Hc"], "radius": "=F"}
+        ]
+      },
+      {
+        "key": "tubesheets", "material": "machined_steel", "display_only": false,
+        "assumptions": ["asm-hx-dimensions", "rcp-hx-arrangement", "rcp-hx-joints", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [["=xL", 0, 0], ["=xR", 0, 0]], "item":
+            {"part": "cylinder", "start": [-15, 0, "=Hc"], "end": [15, 0, "=Hc"], "radius": "=F"}}
+        ]
+      },
+      {
+        "key": "rear_bonnet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-dimensions", "rcp-hx-arrangement", "rcp-hx-head-approximation", "rcp-hx-joints", "rcp-appearance"],
+        "parts": [
+          {"part": "cylinder", "start": ["=xR + 15", 0, "=Hc"], "end": ["=xR + 39", 0, "=Hc"], "radius": "=F"},
+          {"part": "revolve", "origin": [0, 0, "=Hc"], "axis": [1, 0, 0], "ref": [0, 0, 1], "profile": [
+            [0, "=xR + 39"], ["=R", "=xR + 39"], ["=R", "=x_bonnet"],
+            ["=R * sin(67.5)", "=x_bonnet + Hd * cos(67.5)"], ["=R * sin(45)", "=x_bonnet + Hd * cos(45)"],
+            ["=R * sin(22.5)", "=x_bonnet + Hd * cos(22.5)"], [0, "=x_bonnet + Hd"]]}
+        ]
+      },
+      {
+        "key": "joints", "material": "fastener_zinc", "display_only": false,
+        "assumptions": ["rcp-hx-joints", "rcp-appearance"],
+        "parts": [
+          {"part": "bolting", "face_center": ["=xL", 0, "=Hc"], "normal": [1, 0, 0], "thickness_back": 39,
+           "thickness_front": 39, "bolt_count": 12, "bolt_circle_radius": "=R + 24", "stud_radius": 7,
+           "nut_across_flats": 22, "nut_height": 12, "phase_deg": 15},
+          {"part": "bolting", "face_center": ["=xR", 0, "=Hc"], "normal": [1, 0, 0], "thickness_back": 39,
+           "thickness_front": 39, "bolt_count": 12, "bolt_circle_radius": "=R + 24", "stud_radius": 7,
+           "nut_across_flats": 22, "nut_height": 12, "phase_deg": 15},
+          {"part": "bolting", "face_center": ["=x0", 0, "=Hc"], "normal": [-1, 0, 0], "thickness_back": 24,
+           "thickness_front": 28, "bolt_count": 12, "bolt_circle_radius": "=R + 24", "stud_radius": 7,
+           "nut_across_flats": 22, "nut_height": 12, "phase_deg": 15}
+        ]
+      },
+      {
+        "key": "support", "material": "base_paint", "display_only": false,
+        "assumptions": ["asm-hx-dimensions", "rcp-hx-saddles", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "prism", "origin": [-7, 0, 0], "normal": [1, 0, 0], "u_axis": [0, 1, 0], "depth": 14, "outline": [
+              ["=-0.8 * R", 12], ["=0.8 * R", 12], ["=0.8 * R", "=Hc - sqrt(R * R - (0.8 * R) ** 2) + 4"],
+              ["=0.4 * R", "=Hc - sqrt(R * R - (0.4 * R) ** 2) + 4"], [0, "=Hc - R + 4"],
+              ["=-0.4 * R", "=Hc - sqrt(R * R - (0.4 * R) ** 2) + 4"],
+              ["=-0.8 * R", "=Hc - sqrt(R * R - (0.8 * R) ** 2) + 4"]]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, 0, 6], "size": [180, "=0.9 * D", 12]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, "=0.45 * R", "=(Hc - R) / 2 + 6"], "size": [90, 10, "=Hc - R - 20"]}},
+          {"part": "instances", "offsets": [["=-xs", 0, 0], ["=xs", 0, 0]], "item":
+            {"part": "box", "center": [0, "=-0.45 * R", "=(Hc - R) / 2 + 6"], "size": [90, 10, "=Hc - R - 20"]}}
+        ]
+      },
+      {
+        "key": "nozzle/tube_inlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-nozzles", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=x_tube", 0, "=z_bottom"], "direction": [0, 0, -1], "neck_length": 190,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "nozzle/tube_outlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-nozzles", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=x_tube", 0, "=z_top"], "direction": [0, 0, 1], "neck_length": 190,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "nozzle/shell_inlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-nozzles", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=x_shell_in", 0, "=z_bottom"], "direction": [0, 0, -1], "neck_length": 190,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "nozzle/shell_outlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-hx-nozzles", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=x_shell_out", 0, "=z_top"], "direction": [0, 0, 1], "neck_length": 190,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "anchors", "material": "fastener_zinc", "display_only": false,
+        "assumptions": ["rcp-hx-saddles", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [
+            ["=-xs - 60", "=-0.35 * D", 0], ["=-xs + 60", "=-0.35 * D", 0], ["=-xs - 60", "=0.35 * D", 0],
+            ["=-xs + 60", "=0.35 * D", 0], ["=xs - 60", "=-0.35 * D", 0], ["=xs + 60", "=-0.35 * D", 0],
+            ["=xs - 60", "=0.35 * D", 0], ["=xs + 60", "=0.35 * D", 0]], "item":
+            {"part": "bolt", "seat": [0, 0, 12], "axis": [0, 0, 1], "across_flats": 16, "height": 9, "stud_radius": 5,
+             "stud_length": 14}}
+        ]
+      }
+    ],
+    "assumptions": {
+      "asm-hx-dimensions": {"category": "illustrative_dimension",
+        "description": "Illustrative exchanger size: 1.6 m straight shell between the tubesheets, 0.32 m shell outside diameter, 0.62 m centreline height and a 0.3 m front channel by default. Chosen only to demonstrate composition; no heat-transfer area, duty, pressure, temperature, material or design code is implied or verified."},
+      "asm-hx-nozzles": {"category": "illustrative_dimension",
+        "description": "Four DN50 nozzles with flange faces 150 mm beyond the shell or channel surface: tube inlet (bottom) and tube outlet (top) at the middle of the front channel; shell inlet at the bottom near the rear tubesheet and shell outlet on top near the front tubesheet, each shell_nozzle_offset (0.22 m by default) from its tubesheet. Positions and sizes are illustrative, not a nozzle schedule; liquid service, duty and ratings are unknown."},
+      "rcp-hx-arrangement": {"category": "approximation",
+        "description": "General shell-and-tube arrangement only: a tube bundle between two tubesheets inside a cylindrical shell, a front channel with a bolted flat cover carrying both tube-side nozzles and a rear return bonnet. Tubes, baffles and pass partitions are internal and not modelled; the shell is shown as a plain cylinder. General product-type reference: Alfa Laval public shell-and-tube overview, https://www.alfalaval.com/en-GB/products/heat-transfer/tubular-heat-exchangers/shell-and-tube-heat-exchanger/ . Only the general arrangement is used; no vendor geometry, drawing or dimension is copied."},
+      "rcp-hx-joints": {"category": "illustrative_detail",
+        "description": "Each girth joint is a 24 mm shell flange, a clamped 30 mm tubesheet and a 24 mm channel or bonnet flange held by twelve studs; the channel cover is a 28 mm plate on twelve studs. Flange outer radius is the shell radius plus 45 mm. Not a flange design, gasket or rating."},
+      "rcp-hx-head-approximation": {"category": "approximation",
+        "description": "The rear bonnet's semi-elliptical head (depth half the shell radius) is approximated by a revolved polygon with five points per quadrant after a 60 mm straight flange."},
+      "rcp-hx-saddles": {"category": "illustrative_detail",
+        "description": "Two fabricated saddles at 25 % of the shell length either side of centre, each with a web, two stiffeners, a base plate and four anchor bolts. Not a support design."},
+      "rcp-flange-dn50-like": {"category": "illustrative_detail",
+        "description": "DN50 nozzle flange proportions shared with the skid recipes (OD 150 mm, 18 mm thick, four 18 mm holes on a 120 mm circle). No rating or standard selected."},
+      "rcp-appearance": {"category": "appearance",
+        "description": "Colours, metalness and roughness are appearance-only and assert no material of construction."}
+    }
+  },
+  "ports": {
+    "tube_inlet": {"direction": "in", "required": true, "service": "liquid"},
+    "tube_outlet": {"direction": "out", "required": true, "service": "liquid"},
+    "shell_inlet": {"direction": "in", "required": true, "service": "liquid"},
+    "shell_outlet": {"direction": "out", "required": true, "service": "liquid"}
+  },
+  "flow_paths": [["tube_inlet", "tube_outlet"], ["shell_inlet", "shell_outlet"]],
+  "symbol": {"shape": "heat_exchanger", "anchors": {
+    "tube_inlet": [-90, 14], "tube_outlet": [-90, -14], "shell_inlet": [40, 58], "shell_outlet": [-10, -58]}},
+  "unknowns": [
+    "Heat duty, flow rates, inlet and outlet temperatures, pressures and fluid identities are unspecified.",
+    "Heat-transfer area, tube count, diameter, length and layout, number of passes, baffles and fouling allowances are not designed or verified.",
+    "Materials of construction, design code, flange ratings and exchanger type designation are not selected.",
+    "Which stream is assigned to the tube side or the shell side is a modelling choice, not a verified process decision."
+  ]
+}

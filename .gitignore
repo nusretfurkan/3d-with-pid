@@ -1,0 +1,29 @@
+# Generated outputs. Project documents, notes sidecars and source stay tracked.
+*.skid/
+*.workflow/
+/work/
+/demo/
+
+# Document storage locks and interrupted atomic writes.
+*.json.lock
+.*.tmp
+.*.tmp.blend
+.*.tmp.png
+*.blend1
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.venv-cad/
+
+# Node / browser checks (development only)
+node_modules/
+test-results/
+playwright-report/
+
+# Local review output from the browser harness (UI_REVIEW_DIR default)
+/artifacts/
+
+# OS clutter
+.DS_Store

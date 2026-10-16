@@ -1,0 +1,754 @@
+{
+  "current": {
+    "id": "project-pump-skid",
+    "model": {
+      "assumptions": {
+        "asm-boundary-marker": {
+          "description": "Scope boundary marker with an illustrative 0.2 m size. Downstream plant is outside the modeled scope.",
+          "source": "Size: E1a fixture choice. Boundary role: docs/PUMP_SKID.md."
+        },
+        "asm-check-valve-dimensions": {
+          "description": "Illustrative DN50 check valve: face-to-face length 0.18 m and body diameter 0.11 m. Its inlet-to-outlet direction follows process flow.",
+          "source": "Length: docs/PUMP_SKID.md prototype value. Body diameter: E1a fixture choice."
+        },
+        "asm-dn50-liquid-service": {
+          "description": "All process ports are DN50 (a nominal designation in millimetres, not an outside diameter) in liquid service. Duty, flow, pressure, temperature, material, and wall thickness are unknown. The prototype omits operating and safety design.",
+          "source": "docs/PUMP_SKID.md prototype assumption."
+        },
+        "asm-dn50-pipe": {
+          "description": "All five process connections are DN50 with an assumed 0.0603 m outside diameter. This is not a selected pipe schedule or fabrication specification. Liquid service with unknown duty, flow, pressure, temperature, material, and wall thickness.",
+          "source": "docs/PUMP_SKID.md prototype assumption."
+        },
+        "asm-guided-routes": {
+          "description": "Guided orthogonal centreline routes chosen once for the fixture, leaving and entering each nozzle along its axis: tank to suction valve (0.5, 0, 0.2) to (0.72, 0, 0.2); suction valve to pump (0.88, 0, 0.2) to (1.175, 0, 0.2); check valve to discharge valve (2.39, 0, 0.7) via (2.7, 0, 0.7) to (2.7, -0.37, 0.7); discharge valve to boundary (2.7, -0.53, 0.7) to (2.7, -0.75, 0.7). No fittings, supports, slope, or clash checks.",
+          "source": "E1a fixture choice."
+        },
+        "asm-indicator-dial": {
+          "description": "Conceptual level and pressure indications drawn with an illustrative 0.08 m dial. Not an instrument specification or hookup design.",
+          "source": "docs/PUMP_SKID.md prototype value."
+        },
+        "asm-indicator-mounts": {
+          "description": "Conceptual indication mount points: level indication on the tank top centre (0, 0, 1.2); pressure indication on top of the pump discharge line at (1.9, 0, 0.73). No tapping, hookup, or support is modeled.",
+          "source": "E1a fixture choice."
+        },
+        "asm-isolation-valve-dimensions": {
+          "description": "Illustrative DN50 suction and discharge isolation valves: face-to-face length 0.16 m and body diameter 0.10 m.",
+          "source": "Length: docs/PUMP_SKID.md prototype value. Body diameter: E1a fixture choice."
+        },
+        "asm-manual-route": {
+          "description": "Manually chosen pump discharge route: rises from the pump outlet (1.5, 0, 0.5) to (1.5, 0, 0.7), then runs along +x above the motor to the check valve inlet (2.21, 0, 0.7). Included to exercise preservation of manual routing.",
+          "source": "E1a fixture choice."
+        },
+        "asm-pump-dimensions": {
+          "description": "Illustrative centrifugal pump envelopes: body 0.45 m long (x) by 0.30 m wide (y) by 0.40 m high (z); motor 0.35 m long by 0.22 m diameter on the shaft axis. End suction and top discharge follow template centrifugal_pump version 1. Not a vendor selection.",
+          "source": "docs/PUMP_SKID.md prototype values."
+        },
+        "asm-skid-layout": {
+          "description": "Illustrative skid arrangement. The deck top is z = 0 m; process flow runs along +x at y = 0 until the discharge turns toward -y. Placement origins use template version 1 local frames: tank shell base centre (0, 0, 0); suction valve centre (0.8, 0, 0.2); pump body base centre (1.5, 0, 0); check valve centre (2.3, 0, 0.7); discharge valve centre (2.7, -0.45, 0.7) and boundary marker centre (2.7, -0.85, 0.7), both rotated -90 degrees about z. Tank and pump nozzles project 0.10 m from their bodies. Not a plant layout, support, or access design.",
+          "source": "E1a fixture choice."
+        },
+        "asm-tank-dimensions": {
+          "description": "Illustrative vertical cylindrical tank: diameter 0.8 m and height 1.2 m. The outlet nozzle centreline is 0.2 m above the tank base, chosen to align with the pump suction centreline. Not a vessel design.",
+          "source": "Diameter and height: docs/PUMP_SKID.md prototype values. Outlet height: E1a fixture choice."
+        }
+      },
+      "connections": {
+        "conn-discharge-1": {
+          "assumption_id": "asm-dn50-pipe",
+          "from_port_id": "port-pump-outlet",
+          "id": "conn-discharge-1",
+          "nominal_diameter_mm": 50,
+          "outside_diameter_m": 0.0603,
+          "tag": "L-103",
+          "to_port_id": "port-check-valve-inlet"
+        },
+        "conn-discharge-2": {
+          "assumption_id": "asm-dn50-pipe",
+          "from_port_id": "port-check-valve-outlet",
+          "id": "conn-discharge-2",
+          "nominal_diameter_mm": 50,
+          "outside_diameter_m": 0.0603,
+          "tag": "L-104",
+          "to_port_id": "port-discharge-valve-inlet"
+        },
+        "conn-discharge-3": {
+          "assumption_id": "asm-dn50-pipe",
+          "from_port_id": "port-discharge-valve-outlet",
+          "id": "conn-discharge-3",
+          "nominal_diameter_mm": 50,
+          "outside_diameter_m": 0.0603,
+          "tag": "L-105",
+          "to_port_id": "port-boundary-inlet"
+        },
+        "conn-suction-1": {
+          "assumption_id": "asm-dn50-pipe",
+          "from_port_id": "port-tank-outlet",
+          "id": "conn-suction-1",
+          "nominal_diameter_mm": 50,
+          "outside_diameter_m": 0.0603,
+          "tag": "L-101",
+          "to_port_id": "port-suction-valve-inlet"
+        },
+        "conn-suction-2": {
+          "assumption_id": "asm-dn50-pipe",
+          "from_port_id": "port-suction-valve-outlet",
+          "id": "conn-suction-2",
+          "nominal_diameter_mm": 50,
+          "outside_diameter_m": 0.0603,
+          "tag": "L-102",
+          "to_port_id": "port-pump-inlet"
+        }
+      },
+      "entities": {
+        "ent-check-valve": {
+          "id": "ent-check-valve",
+          "kind": "check_valve",
+          "parameters": {
+            "body_diameter": {
+              "assumption_id": "asm-check-valve-dimensions",
+              "unit": "m",
+              "value": 0.11
+            },
+            "length": {
+              "assumption_id": "asm-check-valve-dimensions",
+              "unit": "m",
+              "value": 0.18
+            }
+          },
+          "tag": "NRV-101",
+          "template_version": 1
+        },
+        "ent-discharge-valve": {
+          "id": "ent-discharge-valve",
+          "kind": "isolation_valve",
+          "parameters": {
+            "body_diameter": {
+              "assumption_id": "asm-isolation-valve-dimensions",
+              "unit": "m",
+              "value": 0.1
+            },
+            "length": {
+              "assumption_id": "asm-isolation-valve-dimensions",
+              "unit": "m",
+              "value": 0.16
+            }
+          },
+          "tag": "HV-102",
+          "template_version": 1
+        },
+        "ent-level-indicator": {
+          "id": "ent-level-indicator",
+          "kind": "indicator",
+          "observes": {
+            "entity_id": "ent-tank",
+            "variable": "level"
+          },
+          "parameters": {
+            "diameter": {
+              "assumption_id": "asm-indicator-dial",
+              "unit": "m",
+              "value": 0.08
+            }
+          },
+          "tag": "LI-101",
+          "template_version": 1
+        },
+        "ent-outlet-boundary": {
+          "id": "ent-outlet-boundary",
+          "kind": "boundary",
+          "parameters": {
+            "size": {
+              "assumption_id": "asm-boundary-marker",
+              "unit": "m",
+              "value": 0.2
+            }
+          },
+          "tag": "OUT-101",
+          "template_version": 1
+        },
+        "ent-pressure-indicator": {
+          "id": "ent-pressure-indicator",
+          "kind": "indicator",
+          "observes": {
+            "entity_id": "ent-pump",
+            "variable": "discharge_pressure"
+          },
+          "parameters": {
+            "diameter": {
+              "assumption_id": "asm-indicator-dial",
+              "unit": "m",
+              "value": 0.08
+            }
+          },
+          "tag": "PI-101",
+          "template_version": 1
+        },
+        "ent-pump": {
+          "id": "ent-pump",
+          "kind": "centrifugal_pump",
+          "parameters": {
+            "body_height": {
+              "assumption_id": "asm-pump-dimensions",
+              "unit": "m",
+              "value": 0.4
+            },
+            "body_length": {
+              "assumption_id": "asm-pump-dimensions",
+              "unit": "m",
+              "value": 0.45
+            },
+            "body_width": {
+              "assumption_id": "asm-pump-dimensions",
+              "unit": "m",
+              "value": 0.3
+            },
+            "motor_diameter": {
+              "assumption_id": "asm-pump-dimensions",
+              "unit": "m",
+              "value": 0.22
+            },
+            "motor_length": {
+              "assumption_id": "asm-pump-dimensions",
+              "unit": "m",
+              "value": 0.35
+            }
+          },
+          "tag": "P-101",
+          "template_version": 1
+        },
+        "ent-suction-valve": {
+          "id": "ent-suction-valve",
+          "kind": "isolation_valve",
+          "parameters": {
+            "body_diameter": {
+              "assumption_id": "asm-isolation-valve-dimensions",
+              "unit": "m",
+              "value": 0.1
+            },
+            "length": {
+              "assumption_id": "asm-isolation-valve-dimensions",
+              "unit": "m",
+              "value": 0.16
+            }
+          },
+          "tag": "HV-101",
+          "template_version": 1
+        },
+        "ent-tank": {
+          "id": "ent-tank",
+          "kind": "tank",
+          "parameters": {
+            "diameter": {
+              "assumption_id": "asm-tank-dimensions",
+              "unit": "m",
+              "value": 0.8
+            },
+            "height": {
+              "assumption_id": "asm-tank-dimensions",
+              "unit": "m",
+              "value": 1.2
+            },
+            "outlet_height": {
+              "assumption_id": "asm-tank-dimensions",
+              "unit": "m",
+              "value": 0.2
+            }
+          },
+          "tag": "TK-101",
+          "template_version": 1
+        }
+      },
+      "ports": {
+        "port-boundary-inlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "in",
+          "entity_id": "ent-outlet-boundary",
+          "id": "port-boundary-inlet",
+          "name": "inlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-check-valve-inlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "in",
+          "entity_id": "ent-check-valve",
+          "id": "port-check-valve-inlet",
+          "name": "inlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-check-valve-outlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "out",
+          "entity_id": "ent-check-valve",
+          "id": "port-check-valve-outlet",
+          "name": "outlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-discharge-valve-inlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "in",
+          "entity_id": "ent-discharge-valve",
+          "id": "port-discharge-valve-inlet",
+          "name": "inlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-discharge-valve-outlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "out",
+          "entity_id": "ent-discharge-valve",
+          "id": "port-discharge-valve-outlet",
+          "name": "outlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-pump-inlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "in",
+          "entity_id": "ent-pump",
+          "id": "port-pump-inlet",
+          "name": "inlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-pump-outlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "out",
+          "entity_id": "ent-pump",
+          "id": "port-pump-outlet",
+          "name": "outlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-suction-valve-inlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "in",
+          "entity_id": "ent-suction-valve",
+          "id": "port-suction-valve-inlet",
+          "name": "inlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-suction-valve-outlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "out",
+          "entity_id": "ent-suction-valve",
+          "id": "port-suction-valve-outlet",
+          "name": "outlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        },
+        "port-tank-outlet": {
+          "assumption_id": "asm-dn50-liquid-service",
+          "direction": "out",
+          "entity_id": "ent-tank",
+          "id": "port-tank-outlet",
+          "name": "outlet",
+          "nominal_diameter_mm": 50,
+          "required": true,
+          "service": "liquid"
+        }
+      }
+    },
+    "physical": {
+      "placements": {
+        "ent-check-valve": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            2.3,
+            0.0,
+            0.7
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        },
+        "ent-discharge-valve": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            2.7,
+            -0.45,
+            0.7
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            -90.0
+          ],
+          "status": "placed"
+        },
+        "ent-level-indicator": {
+          "assumption_id": "asm-indicator-mounts",
+          "manual": false,
+          "position_m": [
+            0.0,
+            0.0,
+            1.2
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        },
+        "ent-outlet-boundary": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            2.7,
+            -0.85,
+            0.7
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            -90.0
+          ],
+          "status": "placed"
+        },
+        "ent-pressure-indicator": {
+          "assumption_id": "asm-indicator-mounts",
+          "manual": false,
+          "position_m": [
+            1.9,
+            0.0,
+            0.73
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        },
+        "ent-pump": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            1.5,
+            0.0,
+            0.0
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        },
+        "ent-suction-valve": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            0.8,
+            0.0,
+            0.2
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        },
+        "ent-tank": {
+          "assumption_id": "asm-skid-layout",
+          "manual": false,
+          "position_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_deg": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "status": "placed"
+        }
+      },
+      "routes": {
+        "conn-discharge-1": {
+          "assumption_id": "asm-manual-route",
+          "mode": "manual",
+          "points_m": [
+            [
+              1.5,
+              0.0,
+              0.5
+            ],
+            [
+              1.5,
+              0.0,
+              0.7
+            ],
+            [
+              2.21,
+              0.0,
+              0.7
+            ]
+          ],
+          "status": "current"
+        },
+        "conn-discharge-2": {
+          "assumption_id": "asm-guided-routes",
+          "mode": "guided",
+          "points_m": [
+            [
+              2.39,
+              0.0,
+              0.7
+            ],
+            [
+              2.7,
+              0.0,
+              0.7
+            ],
+            [
+              2.7,
+              -0.37,
+              0.7
+            ]
+          ],
+          "status": "current"
+        },
+        "conn-discharge-3": {
+          "assumption_id": "asm-guided-routes",
+          "mode": "guided",
+          "points_m": [
+            [
+              2.7,
+              -0.53,
+              0.7
+            ],
+            [
+              2.7,
+              -0.75,
+              0.7
+            ]
+          ],
+          "status": "current"
+        },
+        "conn-suction-1": {
+          "assumption_id": "asm-guided-routes",
+          "mode": "guided",
+          "points_m": [
+            [
+              0.5,
+              0.0,
+              0.2
+            ],
+            [
+              0.72,
+              0.0,
+              0.2
+            ]
+          ],
+          "status": "current"
+        },
+        "conn-suction-2": {
+          "assumption_id": "asm-guided-routes",
+          "mode": "guided",
+          "points_m": [
+            [
+              0.88,
+              0.0,
+              0.2
+            ],
+            [
+              1.175,
+              0.0,
+              0.2
+            ]
+          ],
+          "status": "current"
+        }
+      }
+    },
+    "pid": {
+      "edges": {
+        "edge-discharge-1": {
+          "connection_id": "conn-discharge-1",
+          "from_symbol_id": "sym-pump",
+          "id": "edge-discharge-1",
+          "manual": true,
+          "points": [
+            [
+              360.0,
+              272.0
+            ],
+            [
+              360.0,
+              220.0
+            ],
+            [
+              464.0,
+              220.0
+            ]
+          ],
+          "status": "current",
+          "to_symbol_id": "sym-check-valve"
+        },
+        "edge-discharge-2": {
+          "connection_id": "conn-discharge-2",
+          "from_symbol_id": "sym-check-valve",
+          "id": "edge-discharge-2",
+          "manual": false,
+          "points": [
+            [
+              496.0,
+              220.0
+            ],
+            [
+              584.0,
+              220.0
+            ]
+          ],
+          "status": "current",
+          "to_symbol_id": "sym-discharge-valve"
+        },
+        "edge-discharge-3": {
+          "connection_id": "conn-discharge-3",
+          "from_symbol_id": "sym-discharge-valve",
+          "id": "edge-discharge-3",
+          "manual": false,
+          "points": [
+            [
+              616.0,
+              220.0
+            ],
+            [
+              702.0,
+              220.0
+            ]
+          ],
+          "status": "current",
+          "to_symbol_id": "sym-outlet-boundary"
+        },
+        "edge-suction-1": {
+          "connection_id": "conn-suction-1",
+          "from_symbol_id": "sym-tank",
+          "id": "edge-suction-1",
+          "manual": false,
+          "points": [
+            [
+              160.0,
+              300.0
+            ],
+            [
+              224.0,
+              300.0
+            ]
+          ],
+          "status": "current",
+          "to_symbol_id": "sym-suction-valve"
+        },
+        "edge-suction-2": {
+          "connection_id": "conn-suction-2",
+          "from_symbol_id": "sym-suction-valve",
+          "id": "edge-suction-2",
+          "manual": false,
+          "points": [
+            [
+              256.0,
+              300.0
+            ],
+            [
+              332.0,
+              300.0
+            ]
+          ],
+          "status": "current",
+          "to_symbol_id": "sym-pump"
+        }
+      },
+      "symbols": {
+        "sym-check-valve": {
+          "entity_id": "ent-check-valve",
+          "id": "sym-check-valve",
+          "manual": true,
+          "rotation_deg": 0.0,
+          "x": 480.0,
+          "y": 220.0
+        },
+        "sym-discharge-valve": {
+          "entity_id": "ent-discharge-valve",
+          "id": "sym-discharge-valve",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 600.0,
+          "y": 220.0
+        },
+        "sym-level-indicator": {
+          "entity_id": "ent-level-indicator",
+          "id": "sym-level-indicator",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 120.0,
+          "y": 140.0
+        },
+        "sym-outlet-boundary": {
+          "entity_id": "ent-outlet-boundary",
+          "id": "sym-outlet-boundary",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 720.0,
+          "y": 220.0
+        },
+        "sym-pressure-indicator": {
+          "entity_id": "ent-pressure-indicator",
+          "id": "sym-pressure-indicator",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 420.0,
+          "y": 140.0
+        },
+        "sym-pump": {
+          "entity_id": "ent-pump",
+          "id": "sym-pump",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 360.0,
+          "y": 300.0
+        },
+        "sym-suction-valve": {
+          "entity_id": "ent-suction-valve",
+          "id": "sym-suction-valve",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 240.0,
+          "y": 300.0
+        },
+        "sym-tank": {
+          "entity_id": "ent-tank",
+          "id": "sym-tank",
+          "manual": false,
+          "rotation_deg": 0.0,
+          "x": 120.0,
+          "y": 280.0
+        }
+      }
+    },
+    "revision": 0
+  },
+  "redo": [],
+  "schema_version": 1,
+  "undo": []
+}

@@ -1,0 +1,1195 @@
+{
+  "schema": "equipment-3d-pid.dependency-inventory/1",
+  "recorded": "2026-10-16",
+  "status": "Audit record of package-declared metadata. Not legal advice; declared metadata can be incomplete or wrong. The project's own license is undecided and no LICENSE file is present by deliberate owner choice.",
+  "redistribution": "The proposed source repository redistributes no Python wheels, shared libraries, Node packages, Blender files, browsers or Claude Code binaries. The only third-party files it contains are the vendored Three.js files listed under vendored.",
+  "python_cad_environment": {
+    "source": ".venv-cad (local, excluded from publication)",
+    "interpreter": {
+      "implementation": "CPython",
+      "version": "3.12.15",
+      "created_by": "uv 0.11.8",
+      "platform_observed": "macOS arm64 (wheel tags)",
+      "license_note": "CPython is distributed under the PSF License Agreement (https://docs.python.org/3/license.html). Not redistributed."
+    },
+    "install_modes": {
+      "supported_clean_install": "python3.12 -m venv <venv>; <venv>/bin/pip install -r requirements-cad.txt. requirements-cad.txt requires cadquery==2.6.1 and applies -c constraints-cad.txt, which pins all 39 packages below to the exact audited versions. No clean install from these files has been run or verified on any platform; constraints carry no hashes, and other platforms or Python versions may lack matching wheels.",
+      "lock_snapshot": "constraints-cad.txt (published, 39 exact pins, no hashes) and the private workspace lock snapshot both equal every installed version below. They record one observed macOS arm64 / CPython 3.12.15 resolution, not a cross-platform lock.",
+      "snapshot_matches_installed": true
+    },
+    "package_count": 39,
+    "packages": [
+      {
+        "name": "aiohappyeyeballs",
+        "version": "2.7.1",
+        "lock_snapshot_version": "2.7.1",
+        "declared_license_expression": null,
+        "declared_license_field": "PSF-2.0",
+        "license_classifiers": [
+          "License :: OSI Approved :: Python Software Foundation License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+            "bytes": 13936
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "aiohttp",
+        "version": "3.14.5",
+        "lock_snapshot_version": "3.14.5",
+        "declared_license_expression": "Apache-2.0 AND MIT",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE.txt",
+            "sha256": "2e4be5fc6c4c72a466fcb665d726e049a6891981fe536c4f04b6366749461d23",
+            "bytes": 11313
+          },
+          {
+            "path": "licenses/vendor/llhttp/LICENSE",
+            "sha256": "628168d68bb5a8a17e0bbefb3bd74e326e1edc20583d76f52f457c82c921867d",
+            "bytes": 1069
+          }
+        ],
+        "required_by_installed": [
+          "wslink"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "aiosignal",
+        "version": "1.4.0",
+        "lock_snapshot_version": "1.4.0",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache 2.0",
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "6fd5243e92dd7f98ec69c7ac377728e74905709ff527a5bf98d6d0263c04f5b6",
+            "bytes": 11332
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "attrs",
+        "version": "26.1.0",
+        "lock_snapshot_version": "26.1.0",
+        "declared_license_expression": "MIT",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "882115c95dfc2af1eeb6714f8ec6d5cbcabf667caff8729f42420da63f714e9f",
+            "bytes": 1109
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "cadquery",
+        "version": "2.6.1",
+        "lock_snapshot_version": "2.6.1",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache Public License 2.0",
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "7345486c76eb0160046e06c9c77797294979e15fc7cd1502d5c9cb650931bb84",
+            "bytes": 11485
+          }
+        ],
+        "required_by_installed": [],
+        "role": "direct",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "Direct requirement (requirements-cad.txt pins cadquery==2.6.1). Upstream LICENSE: Apache-2.0."
+      },
+      {
+        "name": "cadquery-ocp",
+        "version": "7.8.1.1.post1",
+        "lock_snapshot_version": "7.8.1.1.post1",
+        "declared_license_expression": null,
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "No License/License-Expression/classifier metadata and no license file in dist-info. Upstream CadQuery/OCP repository LICENSE is Apache-2.0 for the binding. The macOS arm64 wheel bundles 75 shared libraries under OCP/.dylibs including OCCT 7.8.1 (LGPL-2.1 with Open CASCADE exception 1.0) and third-party image/font/compression libraries (e.g. FreeImage, FreeType, LibRaw, OpenEXR, libtiff, libpng, libjpeg, libwebp, OpenJPEG, LittleCMS, zlib, zstd, liblzma, libdeflate, LERC, libc++) whose individual terms are not declared in the wheel metadata. Not redistributed by this project. Status: UNCERTAIN for bundled-library notices.",
+        "metadata_status": "no_license_metadata"
+      },
+      {
+        "name": "casadi",
+        "version": "3.8.1",
+        "lock_snapshot_version": "3.8.1",
+        "declared_license_expression": null,
+        "declared_license_field": "GNU Lesser General Public License v3 or later (LGPLv3+)",
+        "license_classifiers": [
+          "License :: OSI Approved"
+        ],
+        "license_files_in_dist_info": [],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp311-abi3-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "LGPL-3.0-or-later per License field; classifier only 'OSI Approved'. No license file in dist-info; casadi/include/licenses/ in the installed package contains per-component third-party license directories (e.g. IPOPT, MUMPS, HiGHS, OSQP, SUNDIALS, CBC/CLP). Wheel tag cp311-abi3. Not used by project code directly.",
+        "metadata_status": "field_only_generic_classifier"
+      },
+      {
+        "name": "contourpy",
+        "version": "1.4.0",
+        "lock_snapshot_version": "1.4.0",
+        "declared_license_expression": "BSD-3-Clause",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "11401c428c7014a75728e8679f9c000aacf262015aaba65a760d41aa1130b3af",
+            "bytes": 1534
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "cycler",
+        "version": "0.12.1",
+        "lock_snapshot_version": "0.12.1",
+        "declared_license_expression": null,
+        "declared_license_field": "<embedded license text, 1705 characters>",
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "f1218143d766da3fea66f13396b7f15df46a83303f29bf96ba6e98eb4d42f408",
+            "bytes": 1497
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "License field contains BSD-3-Clause style text; classifier BSD."
+      },
+      {
+        "name": "ezdxf",
+        "version": "1.4.4",
+        "lock_snapshot_version": "1.4.4",
+        "declared_license_expression": null,
+        "declared_license_field": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "db97ca426fc0d2b8124145de0f36181db73e6e713ce642d42fed2efc442edf19",
+            "bytes": 1071
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "No License field; classifier MIT; dist-info license file present."
+      },
+      {
+        "name": "fonttools",
+        "version": "4.66.1",
+        "lock_snapshot_version": "4.66.1",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "6787208f83f659ccbc2223b2fde952ffa6f7e8aca62f1a8a2bf5bc51bb1b2383",
+            "bytes": 1072
+          },
+          {
+            "path": "licenses/LICENSE.external",
+            "sha256": "94a83aaee0729a0f302d34acc4acecbd9d58366f262429075fe557e4a54b2e69",
+            "bytes": 20022
+          }
+        ],
+        "required_by_installed": [
+          "ezdxf",
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_10_13_universal2"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "frozenlist",
+        "version": "1.8.0",
+        "lock_snapshot_version": "1.8.0",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache-2.0",
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "6fd5243e92dd7f98ec69c7ac377728e74905709ff527a5bf98d6d0263c04f5b6",
+            "bytes": 11332
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp",
+          "aiosignal"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "idna",
+        "version": "3.20",
+        "lock_snapshot_version": "3.20",
+        "declared_license_expression": "BSD-3-Clause",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE.md",
+            "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+            "bytes": 1541
+          }
+        ],
+        "required_by_installed": [
+          "yarl"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "kiwisolver",
+        "version": "1.5.1",
+        "lock_snapshot_version": "1.5.1",
+        "declared_license_expression": null,
+        "declared_license_field": "<embedded license text, 3857 characters>",
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "529c40e5f67f2f88904657a9f7879ae2f8dc76bc9bfef9cb10d988b48804ed61",
+            "bytes": 3289
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "License field contains the full Kiwi BSD-3-Clause style terms; classifier BSD."
+      },
+      {
+        "name": "matplotlib",
+        "version": "3.11.2",
+        "lock_snapshot_version": "3.11.2",
+        "declared_license_expression": null,
+        "declared_license_field": "<embedded license text, 74656 characters>",
+        "license_classifiers": [
+          "License :: OSI Approved :: Python Software Foundation License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "822e8e528147569a41975592aee19c11992ab667ba50451cd929031d5fc74491",
+            "bytes": 63442
+          }
+        ],
+        "required_by_installed": [
+          "vtk"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "License field contains the full Matplotlib (PSF-based) license agreement text; classifier PSF."
+      },
+      {
+        "name": "more-itertools",
+        "version": "11.2.0",
+        "lock_snapshot_version": "11.2.0",
+        "declared_license_expression": "MIT",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "09f1c8c9e941af3e584d59641ea9b87d83c0cb0fd007eb5ef391a7e2643c1a46",
+            "bytes": 1053
+          }
+        ],
+        "required_by_installed": [
+          "trame-server"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "msgpack",
+        "version": "1.2.3",
+        "lock_snapshot_version": "1.2.3",
+        "declared_license_expression": "Apache-2.0",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/COPYING",
+            "sha256": "492dedba85da5872f78e6091bcd1fea474d660d35acb4dee964b8aab3f007427",
+            "bytes": 614
+          }
+        ],
+        "required_by_installed": [
+          "wslink"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "multidict",
+        "version": "7.1.0",
+        "lock_snapshot_version": "7.1.0",
+        "declared_license_expression": "Apache-2.0",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "2e4be5fc6c4c72a466fcb665d726e049a6891981fe536c4f04b6366749461d23",
+            "bytes": 11313
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp",
+          "yarl"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "multimethod",
+        "version": "1.12",
+        "lock_snapshot_version": "1.12",
+        "declared_license_expression": null,
+        "declared_license_field": "<embedded license text, 680 characters>",
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE.txt",
+            "sha256": "50477e9b01163e9f1754d3318cc38059278cc6586316c4e627de3076691c8bea",
+            "bytes": 576
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "License field contains Apache-2.0 notice; classifier Apache."
+      },
+      {
+        "name": "nlopt",
+        "version": "2.11.0",
+        "lock_snapshot_version": "2.11.0",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "50a32dafa8ba44e6e68dd59466d7a8d7e90c06294f672c9ab55c32b60fe4a8e6",
+            "bytes": 2235
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "Metadata declares MIT. Upstream NLopt historically combines MIT and LGPL-licensed algorithm sources; whether LGPL parts are compiled into this wheel was not verified. Status: UNCERTAIN."
+      },
+      {
+        "name": "numpy",
+        "version": "2.5.4",
+        "lock_snapshot_version": "2.5.4",
+        "declared_license_expression": "BSD-3-Clause AND 0BSD AND MIT AND Zlib AND CC0-1.0",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE.txt",
+            "sha256": "649a589ab31076e79e9ce62ba24eae9959598124176640dbc95f87bd10f34fcf",
+            "bytes": 46826
+          },
+          {
+            "path": "licenses/numpy/_core/include/numpy/libdivide/LICENSE.txt",
+            "sha256": "fbc539f47d0cf83bc61378080fb873d5c14630126cacbfe754035c3926daa5ec",
+            "bytes": 1018
+          },
+          {
+            "path": "licenses/numpy/_core/src/common/pythoncapi-compat/COPYING",
+            "sha256": "3f2c1ffa76383a55ae0aac01c9737cd70050dff63e1f026694fbe9d662573c98",
+            "bytes": 690
+          },
+          {
+            "path": "licenses/numpy/_core/src/highway/LICENSE",
+            "sha256": "e340270d4f64384569a91d546acb5b094d69ce47f0c015db77abb74dc6f815af",
+            "bytes": 20785
+          },
+          {
+            "path": "licenses/numpy/_core/src/multiarray/dragon4_LICENSE.txt",
+            "sha256": "f7b14309e5f54e5022b26448eefd419988ada2aec01d3c1162d84a0ea8f21f2c",
+            "bytes": 1414
+          },
+          {
+            "path": "licenses/numpy/_core/src/npysort/x86-simd-sort/LICENSE.md",
+            "sha256": "211e7d737d6179a08f791ebb0a99897ce7cd2457410c542876d125576edfe910",
+            "bytes": 1514
+          },
+          {
+            "path": "licenses/numpy/_core/src/umath/svml/LICENSE",
+            "sha256": "c17011467b4fe6e20fbfbeda4df09e58c2bca5480a063e55735a4000a379aad9",
+            "bytes": 1543
+          },
+          {
+            "path": "licenses/numpy/fft/pocketfft/LICENSE.md",
+            "sha256": "a85ca13fdf90160b64a0698215868c13b74d835ad0a4e2ba44713b8c5058a056",
+            "bytes": 1498
+          },
+          {
+            "path": "licenses/numpy/linalg/lapack_lite/LICENSE.txt",
+            "sha256": "a14cc25e10d40a3aa705b7de2fb764a6535d8ee9b2db4e1724900585457dfd55",
+            "bytes": 2266
+          },
+          {
+            "path": "licenses/numpy/ma/LICENSE",
+            "sha256": "05f3b88351988ecfad10abe92c0c50e5875c6452d5009a0084cc291551ffcca6",
+            "bytes": 1593
+          },
+          {
+            "path": "licenses/numpy/random/LICENSE.md",
+            "sha256": "103166b62b80443afb9eb3488e052ea06be0cff566b908f199e561fde49af19f",
+            "bytes": 3511
+          },
+          {
+            "path": "licenses/numpy/random/src/distributions/LICENSE.md",
+            "sha256": "469778be8f33d54e1bcaab28c281cc472916d2d273f835e55bc487d30503face",
+            "bytes": 2745
+          },
+          {
+            "path": "licenses/numpy/random/src/mt19937/LICENSE.md",
+            "sha256": "0e111337b25494a773106695f0e799f642b8567aaacca4f116a74a8177179156",
+            "bytes": 2926
+          },
+          {
+            "path": "licenses/numpy/random/src/pcg64/LICENSE.md",
+            "sha256": "e7d4f4fb20358f314210a892ae17351e04993813646f697ec387385ca2a36918",
+            "bytes": 1154
+          },
+          {
+            "path": "licenses/numpy/random/src/philox/LICENSE.md",
+            "sha256": "6f5828a57223d4cc7f8ea505a2623e7b978b242752c1515e355f46ba2cec1800",
+            "bytes": 1509
+          },
+          {
+            "path": "licenses/numpy/random/src/sfc64/LICENSE.md",
+            "sha256": "9d4098846018319cd68e228ee6220361787f73bccbf00237a85e4fc9621b998f",
+            "bytes": 1226
+          },
+          {
+            "path": "licenses/numpy/random/src/splitmix64/LICENSE.md",
+            "sha256": "268b0ca06759d31ea3ca68dd35f20e877916e927b1c2a835e4592a3c4354b1f9",
+            "bytes": 332
+          }
+        ],
+        "required_by_installed": [
+          "casadi",
+          "contourpy",
+          "ezdxf",
+          "matplotlib",
+          "nlopt"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_14_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "packaging",
+        "version": "26.3",
+        "lock_snapshot_version": "26.3",
+        "declared_license_expression": "Apache-2.0 OR BSD-2-Clause",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48",
+            "bytes": 197
+          },
+          {
+            "path": "licenses/LICENSE.APACHE",
+            "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+            "bytes": 10174
+          },
+          {
+            "path": "licenses/LICENSE.BSD",
+            "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5",
+            "bytes": 1344
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "path",
+        "version": "17.1.1",
+        "lock_snapshot_version": "17.1.1",
+        "declared_license_expression": "MIT",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "5a57cb4db85e2a2dd88c290628908add57e3451449e0a9a71fdfb38776fd759d",
+            "bytes": 1076
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "pillow",
+        "version": "12.3.0",
+        "lock_snapshot_version": "12.3.0",
+        "declared_license_expression": "MIT-CMU",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce",
+            "bytes": 70307
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "propcache",
+        "version": "0.5.4",
+        "lock_snapshot_version": "0.5.4",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache-2.0",
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+            "bytes": 11358
+          },
+          {
+            "path": "licenses/NOTICE",
+            "sha256": "56d6ac6c8105c0a51304c21db060e361af9a8ea0af9a75c239c28b5d13693838",
+            "bytes": 609
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp",
+          "yarl"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "pyparsing",
+        "version": "3.3.3",
+        "lock_snapshot_version": "3.3.3",
+        "declared_license_expression": "MIT",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "a5425f9dc14ac74d4c5f0b679e941f2442e32cca7452a4418d5b1a49893ebe4e",
+            "bytes": 1062
+          }
+        ],
+        "required_by_installed": [
+          "ezdxf",
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "python-dateutil",
+        "version": "2.9.0.post0",
+        "lock_snapshot_version": "2.9.0.post0",
+        "declared_license_expression": null,
+        "declared_license_field": "Dual License",
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License",
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "ba00f51a0d92823b5a1cde27d8b5b9d2321e67ed8da9bc163eff96d5e17e577e",
+            "bytes": 2889
+          }
+        ],
+        "required_by_installed": [
+          "matplotlib"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py2-none-any",
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "'Dual License' (Apache-2.0 for newer contributions, BSD-3-Clause for older) per dist-info LICENSE and classifiers."
+      },
+      {
+        "name": "PyYAML",
+        "version": "6.0.3",
+        "lock_snapshot_version": "6.0.3",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "8d3928f9dc4490fd635707cb88eb26bd764102a7282954307d3e5167a577e8a4",
+            "bytes": 1101
+          }
+        ],
+        "required_by_installed": [
+          "trame"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "six",
+        "version": "1.17.0",
+        "lock_snapshot_version": "1.17.0",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0",
+            "bytes": 1066
+          }
+        ],
+        "required_by_installed": [
+          "python-dateutil"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py2-none-any",
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "trame",
+        "version": "4.0.0",
+        "lock_snapshot_version": "4.0.0",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache License 2.0",
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "a0e8a7cd61a4e04aee1cad9718f5afbaac4341059fb4c3f0b9223e93750b858e",
+            "bytes": 552
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "trame-client",
+        "version": "4.1.4",
+        "lock_snapshot_version": "4.1.4",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "dc7bd3fd126419153790338e50a1ebb314a014c8f1798009ff50441fa424909a",
+            "bytes": 1079
+          }
+        ],
+        "required_by_installed": [
+          "trame",
+          "trame-vtk"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "trame-common",
+        "version": "1.2.9",
+        "lock_snapshot_version": "1.2.9",
+        "declared_license_expression": null,
+        "declared_license_field": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+            "bytes": 11357
+          }
+        ],
+        "required_by_installed": [
+          "trame",
+          "trame-client",
+          "trame-server"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "No License field; classifier Apache Software License; dist-info license file present."
+      },
+      {
+        "name": "trame-server",
+        "version": "4.1.0",
+        "lock_snapshot_version": "4.1.0",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache License 2.0",
+        "license_classifiers": [
+          "License :: OSI Approved :: Apache Software License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "5a6ba2e198e96e1ee6c17b17e6c614812f0271eff28f2b6c8215ab6d51afdf7e",
+            "bytes": 553
+          }
+        ],
+        "required_by_installed": [
+          "trame"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "trame-vtk",
+        "version": "2.11.17",
+        "lock_snapshot_version": "2.11.17",
+        "declared_license_expression": null,
+        "declared_license_field": "BSD License",
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "27198113c2a9a21461dbdba5a9a22639ba4e65f97c15203fbc701a15d6f4d600",
+            "bytes": 1504
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "typing_extensions",
+        "version": "4.16.0",
+        "lock_snapshot_version": "4.16.0",
+        "declared_license_expression": "PSF-2.0",
+        "declared_license_field": null,
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+            "bytes": 13936
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp",
+          "aiosignal",
+          "ezdxf",
+          "multidict"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false
+      },
+      {
+        "name": "typish",
+        "version": "1.9.3",
+        "lock_snapshot_version": "1.9.3",
+        "declared_license_expression": null,
+        "declared_license_field": "MIT",
+        "license_classifiers": [
+          "License :: OSI Approved :: MIT License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "9459e7884420dbea6a752b7401ef7bf7edc84680b4155cbb9d82b50070435acb",
+            "bytes": 1063
+          }
+        ],
+        "required_by_installed": [
+          "cadquery"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "Installs an unrelated top-level 'tests' package into site-packages (tests/ entries in typish RECORD). Could shadow a project 'tests' import only if the repository root is not first on sys.path."
+      },
+      {
+        "name": "vtk",
+        "version": "9.3.1",
+        "lock_snapshot_version": "9.3.1",
+        "declared_license_expression": null,
+        "declared_license_field": "BSD",
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "LICENSE",
+            "sha256": "11232448be82e0ea2c2c66219c2e36389f42249894070ee10c549ff182fc08b6",
+            "bytes": 1761
+          }
+        ],
+        "required_by_installed": [
+          "cadquery-ocp"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "License field 'BSD'; dist-info LICENSE is the VTK BSD-3-Clause style notice. Required by cadquery-ocp==7.8.1.1.post1 (vtk==9.3.1)."
+      },
+      {
+        "name": "wslink",
+        "version": "2.6.0",
+        "lock_snapshot_version": "2.6.0",
+        "declared_license_expression": null,
+        "declared_license_field": null,
+        "license_classifiers": [
+          "License :: OSI Approved :: BSD License"
+        ],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "28e401d582c42ba0d2904c99118b457c6595030fd4235d24f0a82e44e463edb3",
+            "bytes": 1483
+          }
+        ],
+        "required_by_installed": [
+          "trame",
+          "trame-server"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "py3-none-any"
+        ],
+        "redistributed_by_project": false,
+        "audit_note": "No License field; classifier BSD; dist-info license file present."
+      },
+      {
+        "name": "yarl",
+        "version": "1.25.1",
+        "lock_snapshot_version": "1.25.1",
+        "declared_license_expression": null,
+        "declared_license_field": "Apache-2.0",
+        "license_classifiers": [],
+        "license_files_in_dist_info": [
+          {
+            "path": "licenses/LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+            "bytes": 11358
+          },
+          {
+            "path": "licenses/NOTICE",
+            "sha256": "56d6ac6c8105c0a51304c21db060e361af9a8ea0af9a75c239c28b5d13693838",
+            "bytes": 609
+          }
+        ],
+        "required_by_installed": [
+          "aiohttp"
+        ],
+        "role": "transitive",
+        "wheel_tags": [
+          "cp312-cp312-macosx_11_0_arm64"
+        ],
+        "redistributed_by_project": false
+      }
+    ]
+  },
+  "vendored": [
+    {
+      "name": "three",
+      "version": "0.170.0 (r170)",
+      "license": "MIT",
+      "copyright": "Copyright © 2010-2024 three.js authors",
+      "source": "https://registry.npmjs.org/three/-/three-0.170.0.tgz",
+      "npm_integrity": "sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ==",
+      "verification": "2026-10-16: SHA-256 of all four files recomputed and equal to web/vendor/README.md and to the installed npm package copy; LICENSE byte-identical to https://raw.githubusercontent.com/mrdoob/three.js/r170/LICENSE; registry integrity for three@0.170.0 equals the recorded value.",
+      "modified": false,
+      "files": [
+        {
+          "path": "web/vendor/three/build/three.module.min.js",
+          "package_path": "build/three.module.min.js",
+          "sha256": "08fd7545d13d2c7fb65ab691530a802dafefd638596501854f267d0fb13c39e7",
+          "bytes": 691648
+        },
+        {
+          "path": "web/vendor/three/examples/jsm/controls/OrbitControls.js",
+          "package_path": "examples/jsm/controls/OrbitControls.js",
+          "sha256": "80efaadea4f8a636a65fb0bd08bfef62f3d93a0bb94e2e7500f23176c5c07f4e",
+          "bytes": 32134
+        },
+        {
+          "path": "web/vendor/three/examples/jsm/controls/TransformControls.js",
+          "package_path": "examples/jsm/controls/TransformControls.js",
+          "sha256": "9848ad589dfcf5f3769d0836472cb37cc46e6e0b36eb42ebcf7c898d0072e8ec",
+          "bytes": 41663
+        },
+        {
+          "path": "web/vendor/three/LICENSE",
+          "package_path": "LICENSE",
+          "sha256": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454",
+          "bytes": 1081
+        }
+      ],
+      "redistributed_by_project": true
+    }
+  ],
+  "node_development": [
+    {
+      "name": "@playwright/test",
+      "version": "1.58.2",
+      "license": "Apache-2.0",
+      "notices": [
+        "LICENSE",
+        "NOTICE"
+      ],
+      "role": "historical audited snapshot only: direct dependency of the private development runtime (with three 0.170.0, which this project vendors separately under web/vendor/three/). Not present in the public root package.json or package-lock.json."
+    },
+    {
+      "name": "playwright",
+      "version": "1.58.2",
+      "license": "Apache-2.0",
+      "notices": [
+        "LICENSE",
+        "NOTICE",
+        "ThirdPartyNotices.txt"
+      ],
+      "role": "public root package-lock.json: the only direct devDependency, exact 1.58.2. Historical snapshot: transitive of @playwright/test."
+    },
+    {
+      "name": "playwright-core",
+      "version": "1.58.2",
+      "license": "Apache-2.0",
+      "notices": [
+        "LICENSE",
+        "NOTICE",
+        "ThirdPartyNotices.txt"
+      ],
+      "role": "transitive dev, exact 1.58.2, in both the public root package-lock.json and the historical snapshot"
+    },
+    {
+      "name": "fsevents",
+      "version": "2.3.2",
+      "license": "MIT",
+      "role": "optional macOS-only transitive dev, exact 2.3.2 (dev and optional in the public root package-lock.json; also in the historical snapshot)"
+    },
+    {
+      "_note": "Licence and notice data were audited from a private local npm install whose package.json declared @playwright/test ^1.58.2 and three ^0.170.0 (installed 1.58.2 and 0.170.0, with playwright, playwright-core and fsevents as transitives). That install is not published. The public root package.json declares only the devDependency playwright 1.58.2; its package-lock.json (lockfileVersion 3) resolves exactly playwright 1.58.2, playwright-core 1.58.2 and optional fsevents 2.3.2, all from registry.npmjs.org with integrity hashes. The three versions shared with the snapshot are identical, so their licence data carry over; @playwright/test and the npm three package are not part of the public lock. The browser UI uses only the vendored Three.js listed under vendored. No clean npm ci from the public lock is recorded here. Browser binaries downloaded by Playwright carry their own terms and are not redistributed."
+    }
+  ],
+  "external_tools_not_redistributed": [
+    {
+      "name": "Blender",
+      "version_observed": "5.1.1",
+      "license": "GPL-3.0-or-later (installed distribution's license.md)",
+      "note": "Optional 3D adapter runtime. Project files that import bpy/mathutils are listed in docs/PUBLIC_CONTENTS_AUDIT.md; their distribution terms are an open owner/legal decision and a publication blocker for that code. Running Blender as a subprocess is not asserted to resolve this."
+    },
+    {
+      "name": "Claude Code CLI",
+      "version_observed": "2.1.301",
+      "license": "Proprietary: '© Anthropic PBC. All rights reserved. Use is subject to Anthropic's Commercial Terms of Service' (npm license field 'SEE LICENSE IN README.md')",
+      "note": "Optional external service client for Ask/engineering plan/research modes; user installs and authenticates it. Not bundled; project data sent only when those modes are used."
+    },
+    {
+      "name": "Node.js",
+      "version_observed": "22.23.1",
+      "note": "Optional, for browser unit/e2e tests; no frontend build step."
+    }
+  ]
+}

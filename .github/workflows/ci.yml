@@ -1,0 +1,125 @@
+# Continuous integration for the pump-skid workspace. Not yet executed on GitHub: the first
+# remote run is the acceptance of this file. The runner image (ubuntu-24.04), action versions,
+# Node 22 setup and the Linux x86_64 wheel resolution of constraints-cad.txt are therefore
+# unverified; local runs were on macOS arm64 with Python 3.12 and Node 22. No job uses
+# a language model, API key, secret, Blender or network service beyond package downloads.
+#
+# Lanes:
+#   core     Python 3.12 standard library only: the Python suite (CadQuery/Blender tests skip
+#            with stated reasons) and the core reference (scripts/reference.py).
+#   node     Node 22 (the verified target; package.json engines), npm ci (pinned Playwright 1.58.2,
+#            not used by the unit tests) and the Node UI unit tests.
+#   cad      Python 3.12 + requirements-cad.txt, which applies the root constraints-cad.txt pins
+#            (one audited macOS arm64 resolution): the Python suite with real CadQuery/OCCT
+#            (Blender tests still skip) and the real five-output reference. A resolution failure
+#            on Linux is a finding to report, not something to work around by unpinning.
+#   browser  manual (workflow_dispatch): headless Chromium against the real service and generators.
+# Blender is an optional local lane: scripts/check_blender.sh.
+name: ci
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: Also run the real-service Chromium workflow check
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python suite (standard library only)
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Core reference
+        run: python scripts/reference.py --output "$RUNNER_TEMP/reference-core"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reference-core-evidence
+          path: ${{ runner.temp }}/reference-core/evidence.json
+          if-no-files-found: warn
+
+  node:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci --no-audit --no-fund
+      - name: Node UI unit tests
+        # SKID_PYTHON lets the route-edit parity test run against skid/route_edit.py (standard library).
+        run: SKID_PYTHON="$(command -v python)" npm run test:ui
+
+  cad:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: System libraries for the VTK/OCP wheels
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libegl1 libxrender1 libxext6
+      - name: CAD environment
+        run: |
+          python -m venv .venv-cad
+          .venv-cad/bin/python -m pip install --upgrade "pip==25.2"
+          .venv-cad/bin/python -m pip install -r requirements-cad.txt
+          .venv-cad/bin/python -c "import cadquery, OCP; print('cadquery', cadquery.__version__)"
+      - name: Python suite with real CadQuery/OCCT
+        run: .venv-cad/bin/python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: CAD reference (all five outputs)
+        run: .venv-cad/bin/python scripts/reference.py --output "$RUNNER_TEMP/reference-cad" --cad --timeout 900
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reference-cad-evidence
+          path: ${{ runner.temp }}/reference-cad/evidence.json
+          if-no-files-found: warn
+
+  browser:
+    if: github.event_name == 'workflow_dispatch' && inputs.browser
+    needs: cad
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: System libraries for the VTK/OCP wheels
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libegl1 libxrender1 libxext6
+      - name: CAD environment
+        run: |
+          python -m venv .venv-cad
+          .venv-cad/bin/python -m pip install --upgrade "pip==25.2"
+          .venv-cad/bin/python -m pip install -r requirements-cad.txt
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Real-service browser workflow (software WebGL; see tests/browser/lib.mjs)
+        run: UI_REVIEW_DIR="artifacts/ui-review-ci" node tests/browser/workflow.e2e.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-workflow
+          path: artifacts/ui-review-ci
+          if-no-files-found: warn

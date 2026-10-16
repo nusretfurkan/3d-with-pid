@@ -1,0 +1,118 @@
+{
+  "schema": "skid.equipment.definition/1",
+  "id": "inline-box-housing",
+  "name": "Inline box housing",
+  "function": "Illustrative inline housing between two DN50 flanges; internals and operating duty unknown.",
+  "geometry": {
+    "schema": "skid.geometry.recipe/1",
+    "id": "inline-box-housing",
+    "title": "Inline box housing",
+    "description": "A rectangular housing on two legs with a bolted top cover and DN50 flanged nozzles on opposite end faces, composed only from the existing part vocabulary (box, instances, flanged_nozzle, bolt). Illustrative geometry; internals, wall thickness and duty are not modeled, and it is not evidence of general equipment generation.",
+    "length_unit": "mm",
+    "frame": "Local frame: origin on the floor below the housing centre, flow along +x, +z up. Expression lengths are millimetres; parameters are declared in metres.",
+    "parameters": {
+      "body_length": {"value": 0.5, "unit": "m", "minimum": 0.3, "maximum": 1.2, "assumption_id": "asm-housing-dimensions"},
+      "body_width": {"value": 0.3, "unit": "m", "minimum": 0.2, "maximum": 0.8, "assumption_id": "asm-housing-dimensions"},
+      "body_height": {"value": 0.35, "unit": "m", "minimum": 0.2, "maximum": 0.8, "assumption_id": "asm-housing-dimensions"},
+      "nozzle_height": {"value": 0.5, "unit": "m", "minimum": 0.3, "maximum": 1.5, "assumption_id": "asm-housing-ports"}
+    },
+    "derived": [
+      ["L", "=body_length"],
+      ["W", "=body_width"],
+      ["H", "=body_height"],
+      ["Hn", "=nozzle_height"],
+      ["xL", "=-L / 2"],
+      ["xR", "=L / 2"],
+      ["z0", "=Hn - H / 2"],
+      ["z1", "=Hn + H / 2"]
+    ],
+    "constraints": [
+      {"at_least_zero": "=z0 - 100", "message": "legs need at least 100 mm below the housing"},
+      {"at_least_zero": "=H - 120", "message": "the housing must be taller than the 72 mm nozzle neck with clearance"},
+      {"at_least_zero": "=W - 120", "message": "the housing must be wider than the 72 mm nozzle neck with clearance"}
+    ],
+    "ports": {
+      "inlet": {"position": ["=xL - 150", 0, "=Hn"], "direction": [-1, 0, 0], "nominal_diameter_mm": 50,
+                "component": "nozzle/inlet", "assumption_id": "asm-housing-ports"},
+      "outlet": {"position": ["=xR + 150", 0, "=Hn"], "direction": [1, 0, 0], "nominal_diameter_mm": 50,
+                 "component": "nozzle/outlet", "assumption_id": "asm-housing-ports"}
+    },
+    "components": [
+      {
+        "key": "body", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-housing-dimensions", "rcp-appearance"],
+        "parts": [
+          {"part": "box", "center": [0, 0, "=Hn"], "size": ["=L", "=W", "=H"]}
+        ]
+      },
+      {
+        "key": "cover", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-housing-dimensions", "rcp-cover", "rcp-appearance"],
+        "parts": [
+          {"part": "box", "center": [0, 0, "=z1 + 10"], "size": ["=L + 30", "=W + 30", 20]}
+        ]
+      },
+      {
+        "key": "support", "material": "base_paint", "display_only": false,
+        "assumptions": ["asm-housing-dimensions", "rcp-legs", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [["=xL + 60", 0, 0], ["=xR - 60", 0, 0]], "item":
+            {"part": "box", "center": [0, 0, "=z0 / 2"], "size": [40, "=W - 20", "=z0"]}},
+          {"part": "instances", "offsets": [["=xL + 60", 0, 0], ["=xR - 60", 0, 0]], "item":
+            {"part": "box", "center": [0, 0, 6], "size": [90, "=W + 20", 12]}}
+        ]
+      },
+      {
+        "key": "nozzle/inlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-housing-ports", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=xL - 150", 0, "=Hn"], "direction": [-1, 0, 0], "neck_length": 160,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "nozzle/outlet", "material": "vessel_paint", "display_only": false,
+        "assumptions": ["asm-housing-ports", "rcp-flange-dn50-like", "rcp-appearance"],
+        "parts": [
+          {"part": "flanged_nozzle", "port": ["=xR + 150", 0, "=Hn"], "direction": [1, 0, 0], "neck_length": 160,
+           "neck_radius": 36, "bore_radius": 26,
+           "flange": {"outer_radius": 75, "thickness": 18, "bolt_count": 4, "bolt_circle_radius": 60, "hole_radius": 9}}
+        ]
+      },
+      {
+        "key": "fasteners", "material": "fastener_zinc", "display_only": false,
+        "assumptions": ["rcp-cover", "rcp-appearance"],
+        "parts": [
+          {"part": "instances", "offsets": [["=xL", "=-W / 2", 0], ["=xL", "=W / 2", 0], ["=xR", "=-W / 2", 0],
+                                            ["=xR", "=W / 2", 0], [0, "=-W / 2", 0], [0, "=W / 2", 0]], "item":
+            {"part": "bolt", "seat": [0, 0, "=z1 + 20"], "axis": [0, 0, 1], "across_flats": 14, "height": 8,
+             "stud_radius": 4.5, "stud_length": 12}}
+        ]
+      }
+    ],
+    "assumptions": {
+      "asm-housing-dimensions": {"category": "illustrative_dimension",
+        "description": "Illustrative housing size: 0.5 m long, 0.3 m wide, 0.35 m tall by default. Example values for demonstrating composition; no capacity, pressure or material is implied."},
+      "asm-housing-ports": {"category": "illustrative_dimension",
+        "description": "Two DN50 ports on the housing axis at nozzle_height (0.5 m by default), each flange face 150 mm beyond its end face. Liquid service, duty and ratings unknown."},
+      "rcp-cover": {"category": "illustrative_detail",
+        "description": "Bolted top cover 15 mm wider than the housing on every side with six nuts and stud ends. No gasket, bolt specification or access requirement is implied."},
+      "rcp-legs": {"category": "illustrative_detail",
+        "description": "Two plate legs 60 mm inside the housing ends with foot plates resting on the deck at z = 0. Not a support design."},
+      "rcp-flange-dn50-like": {"category": "illustrative_detail",
+        "description": "DN50 flange proportions shared with the skid recipes (OD 150 mm, 18 mm thick, four 18 mm holes on a 120 mm circle). No rating or standard selected."},
+      "rcp-appearance": {"category": "appearance",
+        "description": "Colours, metalness and roughness are appearance-only and assert no material of construction."}
+    }
+  },
+  "ports": {
+    "inlet": {"direction": "in", "required": true, "service": "liquid"},
+    "outlet": {"direction": "out", "required": true, "service": "liquid"}
+  },
+  "symbol": {"shape": "box_equipment", "anchors": {"inlet": [-40, 0], "outlet": [40, 0]}},
+  "unknowns": [
+    "Internals, wall thickness, pressure, temperature, material and ratings are unspecified.",
+    "Operating duty, maintenance access and draining or venting are not modeled."
+  ]
+}
