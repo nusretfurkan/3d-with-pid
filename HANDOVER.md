@@ -23,7 +23,7 @@ A schema-1 JSON document (`skid/core`) holds engineering semantics (`model`), P&
 ## State
 
 - Implemented and covered by automated tests: the core, commands and persistence; built-in and composed equipment; five-output generation and publication; the interactive service and browser workspace; guided rerouting and the equipment-body screen; straight-section moves; blank projects with add/connect; local Ask; the planner and research bridges (tested with labelled fakes).
-- **Evidence:** the current assessment is [docs/REPOSITORY_ASSESSMENT.md](docs/REPOSITORY_ASSESSMENT.md). Until it records otherwise, fresh-clone reproduction (full suite and `scripts/reference.py --cad` on a clean clone) and independent software review are **pending**. Development-workspace baselines recorded there are not results for a fresh clone of this candidate.
+- **Evidence:** [final preparation assessment](docs/REPOSITORY_ASSESSMENT.md#final-post-review-verification): clean install and separate final-version reproduction passed. Final suite: 1,021 passed, 11 explicitly skipped; real CAD/reference 288 checks, Node 197, browser workflow 9/9, Blender smoke 1,789 and integration 5/5. Tested commit and runtime/source fingerprints are recorded there; agent review is software review only.
 - **Tooling targets:** Python 3.12; Node.js 22 for the optional UI and browser checks (the only Node version these checks were run on).
 - **Engineering review is outstanding** for every discipline ([docs/ENGINEERING_REVIEW.md](docs/ENGINEERING_REVIEW.md)).
 
@@ -41,4 +41,4 @@ DN50 liquid service only. Composed equipment has at most eight ports, and inline
 
 ## Suggested next work
 
-Follow the owner's priorities. Do not restart completed slices. Open items that are visible in this repository: clean-clone evidence for this candidate; the owner decisions above; independent engineering review; and, if requested, broader equipment vocabulary, other DN sizes, junctions for branches, and delete/duplicate commands, each as a bounded, contract-first slice.
+Follow the owner's priorities. Do not restart completed slices. Open items that are visible in this repository: the owner decisions above; independent engineering review; and, if requested, broader equipment vocabulary, other DN sizes, junctions for branches, and delete/duplicate commands, each as a bounded, contract-first slice.

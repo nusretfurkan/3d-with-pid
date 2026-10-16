@@ -2,7 +2,7 @@
 
 This page lists what the code in this repository does, what it does not do, and how each claim can be checked. It describes software behaviour only. **No independent engineering approval of any output is recorded** ([engineering review](ENGINEERING_REVIEW.md)).
 
-Every capability marked *tested* has automated tests under `tests/` that you can run from a clean checkout ([getting started](GETTING_STARTED.md#5-run-the-checks)). The current assessment is [REPOSITORY_ASSESSMENT.md](REPOSITORY_ASSESSMENT.md). Unless it records otherwise, a fresh-clone rerun of the full suite and independent software review are still pending ([evidence status](REFERENCE_EXAMPLE.md#evidence-status)). Development-workspace baselines are recorded only there, labelled as such, and are not fresh-clone results.
+Capabilities marked *tested* have automated checks under `tests/`. The [final repository assessment](REPOSITORY_ASSESSMENT.md#final-post-review-verification) records successful clean-checkout reproduction and independent software review, including 11 explicit context/replay skips and unexecuted scenarios. Automated verification does not establish engineering adequacy.
 
 ## Status words
 

@@ -169,7 +169,7 @@ python scripts/reference.py --output <new-or-empty-directory> --cad    # core la
 
 ## Evidence status
 
-The current assessment, including the evidence collected so far, is [REPOSITORY_ASSESSMENT.md](REPOSITORY_ASSESSMENT.md). Unless it records otherwise, **fresh-clone reproduction and independent software review are still pending**: this candidate has not had its full automated suite or the reference script run on a clean clone. Baselines recorded there come from the development workspace. They describe that workspace, not a fresh clone of this candidate, and are not final results. When fresh-clone results exist, the assessment records the commit, platform, Python and dependency versions, the commands run and their actual results, including failures and skips.
+The [repository assessment](REPOSITORY_ASSESSMENT.md#final-post-review-verification) records the tested commit, clean-environment setup, final results, skip ledger and remaining limits. Final verification passed: 1,021 Python tests with 11 explicit context/replay skips, 288 reference checks, 197 Node checks, nine real-service browser steps, and the real Blender lane. These are software results; independent engineering review remains outstanding.
 
 ## Output files
 

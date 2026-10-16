@@ -22,7 +22,25 @@ Observed host: macOS 27.0.1 arm64; Python 3.12.15 / pip 26.2.1; Node 22.23.1 / n
 
 The reference verifies 8 entities, 10 ports, 5 lines, 12 initial assumptions; 67 STEP parts / 350 solids / 68 display components; 10 port flange faces / 12 envelopes; 16 legend keys / 13 index items. It verifies stable IDs, rename and new-revision undo, save/reload, manual layout/routing preservation, unchanged regeneration, stale/conflict refusals, and a pending nozzle edit that retains the prior complete publication. Standalone geometry exit 0 with pending manifests is explicitly tested as incomplete.
 
-**Post-review final-version reproduction is pending.** The table above is the initial clean-clone result, not a claim that it included later corrections. The final run will identify its tested commit, actual results and skips here before delivery.
+## Final post-review verification
+
+A new, separate executor with fresh context used only the repository instructions and files at **`827d6b7fa642197f35e175b7d9c975ba1d2b6762`**. It reused the environment independently cold-installed above, confirmed that all 39 pins still matched, installed nothing, and left every tracked file and HEAD unchanged. No earlier conversation or development environment was used.
+
+| Final lane | Result |
+| --- | --- |
+| Full Python suite, real CadQuery and Blender enabled | **1,032 tests: 1,021 passed, 11 skipped**, zero failures/errors; 216.036 s |
+| Real core + five-output CAD reference | **288/288 checks**, all 18 commands returned their expected status; no errors |
+| Node UI units | **197/197 passed**, no skips |
+| Real-service Chromium workflow | **9/9 steps**, zero console/page problems |
+| Real Blender lane | **1,789 smoke checks and 5/5 integration tests passed** |
+| Public source check and self-re-export | **287 files**, byte-identical to the tracked tree; inventory SHA-256 `520a28c7aba81eb7898eb298c6652b65caaee8a432e7f7cd664abb3cc373a12e` at the tested commit |
+| New committed fixture regressions | Both ran and passed; the real mode-000 directory test also ran |
+
+The final sample publication is revision 4, all five outputs complete under one verified pointer. Rename, undo and the nozzle edit preserve or explicitly invalidate the intended data; undo restores model, P&ID and physical records exactly. The output includes a real 5,819,000-byte STEP assembly and its successful reimport verification. The test/output folders and private logs are kept outside the public tracked tree; rerun the commands to produce recipient-owned evidence.
+
+The **11 skips** are exactly the three private-workspace manifest checks and eight excluded recorded-provider replay cases described below. The public-manifest and real self-export positive checks ran. Blender was not skipped. The 1,001-test / zero-skip development baseline and initial 1,027-test result are historical; neither is substituted for this final result.
+
+The delivered repository adds only assessment/handover evidence text after the tested commit. Its runtime, examples/fixtures, tests, tools, dependency pins and CI (251 files) retain source fingerprint SHA-256 **`9c932b05011bc01fae33578277cf3761283e4040d0eb4bbc994b809fd460fcae`**. Final Git-tree inventory is recorded with the local review artifact. No application, generator, test or dependency version changed after final verification.
 
 ## Review findings and corrections
 
@@ -38,7 +56,7 @@ An independent exact Opus 5.5 reviewer at requested `medium` assessed export pri
 | Reference edit reused the old assumption for a new value | The changed parameter now cites a fresh, explicitly illustrative assumption that supersedes the old value for that parameter; original provenance and undo fidelity are preserved |
 | Minor walkthrough/Blender logging issues | Directory typo corrected; failed Blender version queries propagate their real failure |
 
-The corrected executor reference runs passed **99/99 core checks and 288/288 core+CAD checks**. These are post-review executor checks; the final independent reproduction is recorded separately. Existing engineering generators and validators were unchanged by repository preparation.
+The corrected executor reference runs passed **99/99 core checks and 288/288 core+CAD checks**. These are implementation-executor checks; the separate final reproduction above independently reran the 288-check CAD/reference lane. Existing engineering generators and validators were unchanged by repository preparation.
 
 ## Coverage and limits
 
