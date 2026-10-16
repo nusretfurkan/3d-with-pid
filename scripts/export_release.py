@@ -19,7 +19,8 @@ missing; a path is absolute, contains ``..`` or unsafe characters, or lies
 under a ``forbidden_roots`` entry (``artifacts/``, ``release/``, ``.agents/``,
 ``.claude/``, virtual environments, ...); a file or tree is reached through a
 symlinked directory or resolves outside the source workspace; two entries map
-to one destination; a symlink, non-regular file, file over ``max_file_bytes``
+to one destination; a directory inside a tree cannot be listed (it is never
+silently omitted); a symlink, non-regular file, file over ``max_file_bytes``
 or non-UTF-8 file is met; or a file contains this machine's home directory or
 user name in a path, or a recognised credential pattern (only the path, line
 and pattern name are reported, never the match).
@@ -32,6 +33,12 @@ scanned bytes, and each source file is re-read: a source that changed during
 the export refuses the export. The output directory must not exist or must be
 empty: nothing is overwritten. The candidate is assembled in a sibling staging
 directory and renamed into place, so a refused export leaves no partial tree.
+
+Choose an output outside every manifest tree. The default location
+``release/`` is a forbidden root and is never exported. Inside a tree, only
+the *current* output directory is skipped: an earlier candidate (and its
+``.export.json``) left inside a tree, for example after ``--output skid/out``,
+would be exported again as ordinary source files. This is not detected.
 
 The copy is deterministic: sorted traversal, file bytes only, mode 0644 or
 0755 (when the source is executable). ``<output>.export.json`` (beside the
@@ -217,7 +224,13 @@ def plan(source, manifest, output):
         if os.path.islink(top) or not os.path.isdir(top):
             problems.append(f"tree {tree!r} is missing or not a real directory")
             continue
-        for directory, subdirs, files in os.walk(top, followlinks=False):
+
+        def unlistable(exc):  # os.walk would otherwise skip the directory silently: refuse instead of omitting it
+            where = os.path.relpath(exc.filename or top, source).replace(os.sep, "/")
+            problems.append(f"tree directory {where!r} cannot be listed ({exc.strerror or exc}); "
+                            "its files would be silently omitted")
+
+        for directory, subdirs, files in os.walk(top, onerror=unlistable, followlinks=False):
             if os.path.realpath(directory) == output_real:
                 subdirs[:] = []
                 continue
@@ -466,7 +479,8 @@ def _git_init(output, expected):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="python scripts/export_release.py", description=__doc__.splitlines()[0])
     mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--output", metavar="DIR", help="new or empty candidate directory")
+    mode.add_argument("--output", metavar="DIR", help="new or empty candidate directory; keep it outside every "
+                      "manifest tree (e.g. release/github): an earlier candidate left inside a tree is re-exported")
     mode.add_argument("--check", action="store_true", help="plan, read and scan only; write nothing")
     parser.add_argument("--manifest", default=MANIFEST, metavar="JSON", help="release manifest")
     parser.add_argument("--source", default=ROOT, metavar="DIR", help=argparse.SUPPRESS)

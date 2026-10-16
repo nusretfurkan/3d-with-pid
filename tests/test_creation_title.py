@@ -24,9 +24,8 @@ from tests.test_drafting_support import fixture_document, insert_hv103, remove_c
 
 ROOT = Path(__file__).resolve().parents[1]
 # The root's actual empty-start creation (sealed build, revision 3): the pump flow, then HX-101 added as a draft
-# with all four ports open. Generated outputs are not tracked, so the test skips where the build is absent.
-ROOT_R3 = (ROOT / "artifacts" / "agents" / "empty-research" / "root-actual-creation" / "project.workflow" / "builds"
-           / "b20261016T073800-r3-7dd44c9c" / "snapshot.json")
+# with all four ports open. A byte-for-byte copy of that build's snapshot (docs/FIXTURE_PROVENANCE.md).
+ROOT_R3 = ROOT / "tests" / "fixtures" / "creation-r3.json"
 ROOT_R3_SHA256 = "96b5730778bd4d16019d116d4e74e937a100a6b189298c483682553ab8dc5228"
 GENERIC = "PROCESS SCHEMATIC"
 SAMPLE = "TK-101 TO OUT-101 VIA P-101"
@@ -166,7 +165,6 @@ class LegacyTitleTests(TitleCase):
 
 
 class CreationTitleTests(TitleCase):
-    @unittest.skipUnless(ROOT_R3.exists(), "the root's actual-creation build is a generated, untracked artifact")
     def test_actual_root_r3_title_no_longer_puts_the_draft_exchanger_in_the_pump_flow(self):
         raw = ROOT_R3.read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(), ROOT_R3_SHA256)

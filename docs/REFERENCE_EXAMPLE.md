@@ -63,7 +63,7 @@ Run from the repository root with any Python 3.12 environment; no CAD packages a
 
 <!-- check:pump:start -->
 ```sh
-mkdir -p work/reference-manual/reference-manual
+mkdir -p work/reference-manual
 python -m skid.cli sample work/reference-manual/skid.json                                    # copy of the fixture; never overwrites
 python -m skid.cli validate work/reference-manual/skid.json; echo "exit $?"                  # VALID, exit 0
 python -m skid.cli rename work/reference-manual/skid.json ent-pump P-201 --expected-revision 0   # revision 1; the ID is unchanged

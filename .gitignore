@@ -3,6 +3,8 @@
 *.workflow/
 /work/
 /demo/
+/release/
+/reference-output/
 
 # Document storage locks and interrupted atomic writes.
 *.json.lock

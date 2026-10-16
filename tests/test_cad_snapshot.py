@@ -36,7 +36,7 @@ from skid.geometry.step import header_facts
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIXTURE = os.path.join(ROOT, "examples", "pump_skid.json")
 DRUM = os.path.join(ROOT, "examples", "recipes", "horizontal_drum.recipe.json")
-OLD_EVIDENCE = os.path.join(ROOT, "artifacts", "cad-spike", "fixture-r0", "geometry.recipe.json")
+OLD_EVIDENCE = os.path.join(ROOT, "tests", "fixtures", "legacy_geometry_recipe.json")  # docs/FIXTURE_PROVENANCE.md
 _DIRS = []
 
 
@@ -253,9 +253,8 @@ class SnapshotProvenanceTest(unittest.TestCase):
         self.rejected(None, "must be a JSON object", text="[]")
         with open(DRUM, encoding="utf-8") as handle:
             self.rejected(None, "python -m skid.geometry recipe", text=handle.read())
-        if os.path.exists(OLD_EVIDENCE):  # earlier evidence, read only
-            with self.assertRaisesRegex(SnapshotError, "legacy schema"):
-                rebuild_from_recipe(OLD_EVIDENCE, new_dir())
+        with self.assertRaisesRegex(SnapshotError, "legacy schema"):  # earlier generated snapshot, read only
+            rebuild_from_recipe(OLD_EVIDENCE, new_dir())
 
     def test_cli_rebuild_reports_rejection(self):
         document = copy.deepcopy(self.recipe)

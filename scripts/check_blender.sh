@@ -15,6 +15,12 @@ if [ -z "${SKID_BLENDER:-}" ] || [ ! -x "$SKID_BLENDER" ]; then
 fi
 cd "$(dirname "$0")/.."
 PYTHON="${SKID_PYTHON:-python3}"
-"$SKID_BLENDER" --version | head -n 1
+# Capture the version query first (POSIX sh has no pipefail), so a failing --version stops the lane.
+version=$("$SKID_BLENDER" --version) || {
+  status=$?
+  echo "error: $SKID_BLENDER --version failed (exit $status)" >&2
+  exit "$status"
+}
+printf '%s\n' "$version" | head -n 1
 "$SKID_BLENDER" --background --factory-startup --python-exit-code 1 --python tests/blender_smoke.py
 SKID_BLENDER="$SKID_BLENDER" "$PYTHON" -m unittest tests.test_integration -v

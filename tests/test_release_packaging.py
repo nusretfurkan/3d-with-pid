@@ -1,8 +1,10 @@
 """Packaging contracts: the release exporter, the reference script and the pinned Node dev install.
 
 Standard library only. The exporter cases use small synthetic source trees in
-temporary directories (fault injection replaces ``export_release._checkpoint``;
-the Git cases use real ``git`` or a failing stand-in on ``PATH``). Workspace
+temporary directories (fault injection replaces ``export_release._checkpoint``,
+or makes listing one real directory raise ``PermissionError``; the Git cases
+use real ``git`` or a failing stand-in on ``PATH``; the Blender-lane case uses
+a labelled fake Blender, never a real one). Workspace
 manifest cases run only in the private workspace (``repository/`` present);
 the shipped-manifest case runs only in an exported candidate. The reference case runs the real core lane of
 ``scripts/reference.py`` (CLI and drafting subprocesses) into a temporary
@@ -130,6 +132,35 @@ class ExporterTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
         report, _ = export_release.export(str(self.src), str(path), str(self.src / "pkg" / "out"))
         self.assertFalse(any(f["path"].startswith("pkg/out") for f in report["files"]))
+
+    def test_unlistable_tree_directory_is_refused_not_silently_omitted(self):
+        # Fault injection: listing the real directory pkg/sub raises PermissionError, as a mode-000 directory does
+        # for a non-root user. Every other listing, and the tree on disk, are real and unchanged.
+        real_scandir = os.scandir
+        blocked = os.path.realpath(self.src / "pkg" / "sub")
+
+        def scandir(path="."):
+            if os.path.realpath(path) == blocked:
+                raise PermissionError(13, "Permission denied (injected)", os.fspath(path))
+            return real_scandir(path)
+
+        reached = self.stages()
+        with mock.patch.object(os, "scandir", scandir):
+            self.refused("tree directory 'pkg/sub' cannot be listed")
+            with self.assertRaises(export_release.Refused):
+                export_release.check(str(self.src), str(self.src / "manifest.json"))
+        self.assertEqual(reached, [], "refused in plan, before any content was read")
+        report, _ = self.export()  # positive control: the same tree, listable, exports pkg/sub/b.txt
+        self.assertIn("pkg/sub/b.txt", [f["path"] for f in report["files"]])
+
+    @unittest.skipIf(not hasattr(os, "geteuid") or os.geteuid() == 0, "a superuser can list a mode-000 directory")
+    def test_real_mode_000_tree_directory_is_refused(self):
+        sub = self.src / "pkg" / "sub"
+        os.chmod(sub, 0)
+        self.addCleanup(os.chmod, sub, 0o755)
+        if os.access(sub, os.R_OK):
+            self.skipTest("this file system still allows listing a mode-000 directory")
+        self.refused("tree directory 'pkg/sub' cannot be listed")
 
     def stages(self):
         """Record the export stages reached; refusals in ``plan`` must happen before any content is read."""
@@ -419,6 +450,29 @@ class ToolingTargetTests(unittest.TestCase):
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text()
         self.assertEqual(ci.count('node-version: "22"'), 2)
 
+    def test_blender_lane_stops_on_a_failing_version_query(self):
+        # Labelled fake Blender (no real Blender is run): it logs each call and fails as configured.
+        with tempfile.TemporaryDirectory(prefix="skid blender ") as tmp:
+            fake, log = Path(tmp) / "fake-blender", Path(tmp) / "calls.log"
+            fake.write_text('#!/bin/sh\necho "$1" >> "$FAKE_LOG"\n'
+                            'if [ "$1" = "--version" ]; then echo "Blender 0.0 (fake)"; echo second; '
+                            'exit "$FAKE_VERSION_EXIT"; fi\nexit 6\n')
+            os.chmod(fake, 0o755)
+            for version_exit, want in ((5, 5), (0, 6)):
+                log.write_text("")
+                done = subprocess.run(["sh", str(ROOT / "scripts" / "check_blender.sh")], capture_output=True,
+                                      text=True, timeout=60, env=dict(os.environ, SKID_BLENDER=str(fake),
+                                                                      FAKE_LOG=str(log),
+                                                                      FAKE_VERSION_EXIT=str(version_exit)))
+                calls = log.read_text().split()
+                self.assertEqual(done.returncode, want, done.stdout + done.stderr)
+                if version_exit:
+                    self.assertEqual(calls, ["--version"])  # nothing runs after the failed version query
+                    self.assertIn("--version failed (exit 5)", done.stderr)
+                else:
+                    self.assertEqual(calls, ["--version", "--background"])
+                    self.assertEqual(done.stdout, "Blender 0.0 (fake)\n")  # first line only
+
 
 class NodePinTests(unittest.TestCase):
     def test_playwright_is_pinned_exactly_in_package_and_lock(self):
@@ -452,6 +506,11 @@ class ReferenceScriptTests(unittest.TestCase):
             self.assertEqual(exits["stale rename refused"], (4, 4))
             self.assertEqual(exits["drafting drafting-r3"], (2, 2))  # pending is exit 2, never reported complete
             self.assertFalse(any(str(ROOT) in json.dumps(c["argv"]) for c in evidence["commands"]))
+            checked = {c["name"] for c in evidence["checks"]}
+            for name in ("drafting r0: item index count", "drafting r1: item index count",
+                         "core nozzle move: ent-tank outlet_height before the move == expected from_m",
+                         "core nozzle move: ent-tank outlet_height after the move"):
+                self.assertIn(name, checked)  # the declared expectations are asserted, not only recorded
 
     def test_wrong_expectation_fails_and_occupied_output_is_refused(self):
         with tempfile.TemporaryDirectory(prefix="skid reference ") as tmp:
@@ -469,6 +528,45 @@ class ReferenceScriptTests(unittest.TestCase):
             done = self.run_reference("--output", str(out))
             self.assertEqual(done.returncode, 2)
             self.assertIn("not an empty directory", done.stderr)
+
+    def test_wrong_index_count_and_nozzle_origin_fail_their_checks(self):
+        with tempfile.TemporaryDirectory(prefix="skid reference ") as tmp:
+            expected = json.loads((ROOT / "scripts" / "reference_expected.json").read_text())
+            expected["index_items"] += 1
+            expected["nozzle_move"]["from_m"] += 0.05
+            wrong = Path(tmp) / "wrong.json"
+            wrong.write_text(json.dumps(expected))
+            out = Path(tmp) / "run"
+            done = self.run_reference("--output", str(out), "--expected", str(wrong))
+            self.assertEqual(done.returncode, 1, done.stdout[-2000:])
+            evidence = json.loads((out / "evidence.json").read_text())
+            failed = {c["name"] for c in evidence["checks"] if not c["ok"]}
+            self.assertEqual(failed, {"drafting r0: item index count", "drafting r1: item index count",
+                                      "core nozzle move: ent-tank outlet_height before the move == expected from_m"})
+
+    def test_missing_or_malformed_expectations_are_usage_errors_before_any_output(self):
+        good = json.loads((ROOT / "scripts" / "reference_expected.json").read_text())
+        nozzle = {k: v for k, v in good["nozzle_move"].items() if k != "from_m"}
+        cases = {"missing": None, "not-json": "{", "not-utf8": b"\xff\xfe", "not-an-object": "[]",
+                 "index-items-text": dict(good, index_items="13"), "count-boolean": dict(good, legend_keys=True),
+                 "count-negative": dict(good, model=dict(good["model"], ports=-1)),
+                 "no-from-m": dict(good, nozzle_move=nozzle), "no-cad": {k: v for k, v in good.items() if k != "cad"},
+                 "nan-height": json.dumps(good).replace('"outlet_height_m": 0.3', '"outlet_height_m": NaN')}
+        self.assertIn("NaN", cases["nan-height"])
+        with tempfile.TemporaryDirectory(prefix="skid reference ") as tmp:
+            for name, content in cases.items():
+                with self.subTest(name):
+                    path = Path(tmp) / f"{name}.json"
+                    if isinstance(content, bytes):
+                        path.write_bytes(content)
+                    elif content is not None:
+                        path.write_text(content if isinstance(content, str) else json.dumps(content))
+                    out = Path(tmp) / f"out-{name}"
+                    done = self.run_reference("--output", str(out), "--expected", str(path))
+                    self.assertEqual(done.returncode, 2, done.stdout[-1000:] + done.stderr[-2000:])
+                    self.assertIn("--expected", done.stderr)
+                    self.assertNotIn("Traceback", done.stderr)
+                    self.assertFalse(out.exists(), "a usage error creates no output directory")
 
 
 if __name__ == "__main__":

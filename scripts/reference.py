@@ -33,16 +33,24 @@ and an explicit pending nozzle move that keeps the last complete publication
 while the standalone geometry CLI exits 0 with a *pending* manifest (exit 0 is
 not synchronization). Manual route and diagram records are compared exactly.
 
-Writes ``DIR/evidence.json``: expected counts (``scripts/reference_expected.json``),
-every command with its argv/exit status/expected status/output tails, every
+``--expected`` (default ``scripts/reference_expected.json``) must be a JSON
+object with exactly the documented keys (``_``-prefixed comment keys aside):
+non-negative integer counts, finite numbers and non-empty texts. Every
+declared value is asserted, including the item-index count and the nozzle
+move's entity, parameter and starting value. It is read and checked before
+``DIR`` is created; a missing or malformed file is a usage error.
+
+Writes ``DIR/evidence.json``: the expected counts, every command with its argv/exit status/expected status/output tails, every
 check with its outcome, and SHA-256 of the key output files. Exit status: 0
 every asserted contract held; 1 at least one check failed (all checks still
 run where possible and are recorded); 2 usage or precondition error (for
-example ``--cad`` without CadQuery, or a non-empty ``--output``).
+example ``--cad`` without CadQuery, a non-empty ``--output`` or an invalid
+``--expected``).
 
 This is a model-consistency reference, not a process, mechanical or
 fabrication assessment; all fixture dimensions are labelled prototype
-assumptions.
+assumptions. The nozzle move records its own fresh, explicitly illustrative
+assumption (old and new values) and leaves the earlier records unchanged.
 """
 
 from __future__ import annotations
@@ -74,8 +82,17 @@ EXIT_OK, EXIT_FAILED, EXIT_USAGE = 0, 1, 2
 TAIL = 1200
 FIVE = ("display", "cad", "pid", "legend", "description")
 RECORDS = ("model", "pid", "physical")
-PUMP, TANK = "ent-pump", "ent-tank"
+PUMP = "ent-pump"
 NEW_TAG = "P-201"
+COUNT, NUMBER, TEXT = "a non-negative integer", "a finite number", "a non-empty string"
+EXPECTED_SHAPE = {
+    "project_id": TEXT,
+    "model": {"entities": COUNT, "ports": COUNT, "connections": COUNT, "assumptions": COUNT},
+    "legend_keys": COUNT,
+    "index_items": COUNT,
+    "nozzle_move": {"entity_id": TEXT, "parameter": TEXT, "from_m": NUMBER, "outlet_height_m": NUMBER},
+    "cad": {"parts": COUNT, "solids": COUNT, "display_components": COUNT, "ports": COUNT, "envelope_checks": COUNT},
+}
 
 
 def _now():
@@ -101,6 +118,99 @@ def _sha256_file(path):
 def _read_json(path):
     with open(path, encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def _shape_problems(value, shape, where):
+    if isinstance(shape, dict):
+        if not isinstance(value, dict):
+            return [f"{where or 'the file'} must be a JSON object"]
+        problems = [f"{where}{key}: missing" for key in shape if key not in value]
+        problems += [f"{where}{key}: unknown key (only declared expectations are checked)"
+                     for key in value if key not in shape and not key.startswith("_")]
+        for key, inner in shape.items():
+            if key in value:
+                problems += _shape_problems(value[key], inner, f"{where}{key}.")
+        return problems
+    where = where.rstrip(".")
+    number = isinstance(value, (int, float)) and not isinstance(value, bool)
+    ok = {COUNT: number and isinstance(value, int) and value >= 0,
+          NUMBER: number and value == value and abs(value) != float("inf"),
+          TEXT: isinstance(value, str) and bool(value)}[shape]
+    return [] if ok else [f"{where}: {value!r} is not {shape}"]
+
+
+def load_expected(path):
+    """The validated expectation file. Raises ``ValueError`` with every problem found."""
+
+    def refuse_constant(name):
+        raise ValueError(f"non-finite number {name}")
+
+    try:
+        with open(path, encoding="utf-8") as handle:
+            expected = json.load(handle, parse_constant=refuse_constant)
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        raise ValueError(f"cannot read {path}: {exc}") from None
+    problems = _shape_problems(expected, EXPECTED_SHAPE, "")
+    if problems:
+        raise ValueError(f"{path}: " + "; ".join(problems))
+    return expected
+
+
+def _parameter(project, entity_id, name):
+    entity = project["model"]["entities"].get(entity_id) or {}
+    return (entity.get("parameters") or {}).get(name)
+
+
+def _nozzle_assumption(project, move):
+    """The fresh, explicitly illustrative assumption record the nozzle move cites: ``(id, record, previous id)``.
+
+    The moved value is assumed test data, not a measured or sourced quantity. The previous assumption's prose
+    describes the old value, so it is superseded for this parameter only; it stays recorded unchanged.
+    """
+    previous = (_parameter(project, move["entity_id"], move["parameter"]) or {}).get("assumption_id")
+    aid = f"asm-reference-{move['entity_id']}-{move['parameter'].replace('_', '-')}-move"
+    record = {
+        "description": (f"Illustrative reference-check value only: {move['entity_id']} {move['parameter']} changed "
+                        f"from {move['from_m']} m to {move['outlet_height_m']} m to exercise nozzle-move route "
+                        f"invalidation. Supersedes {previous} for this parameter only; {previous} remains recorded "
+                        "unchanged for its other parameters and history. Not a measured, sourced or designed value."),
+        "source": "Assumed test data: the nozzle_move scenario in scripts/reference_expected.json, applied by "
+                  "scripts/reference.py.",
+    }
+    return aid, record, previous
+
+
+def _nozzle_move(ev, project, move, command_id, revision, prefix):
+    """Assert the declared starting value; return the ``set_parameter`` command for the declared move.
+
+    The command adds a fresh illustrative assumption (command-level ``assumptions``) and the changed quantity
+    cites it.
+    """
+    current = _parameter(project, move["entity_id"], move["parameter"]) or {}
+    ev.equal(f"{prefix}: {move['entity_id']} {move['parameter']} before the move == expected from_m",
+             (current.get("value"), current.get("unit")), (move["from_m"], "m"))
+    aid, record, _ = _nozzle_assumption(project, move)
+    ev.check(f"{prefix}: assumption {aid} is fresh (not yet recorded)", aid not in project["model"]["assumptions"])
+    return {"id": command_id, "expected_revision": revision, "type": "set_parameter",
+            "assumptions": {aid: record},
+            "payload": {"entity_id": move["entity_id"], "name": move["parameter"],
+                        "quantity": {"value": move["outlet_height_m"], "unit": "m", "assumption_id": aid}}}
+
+
+def _nozzle_moved(ev, project, move, before, prefix):
+    """Check the moved value, its fresh assumption citation, and that every earlier assumption is unchanged."""
+    current = _parameter(project, move["entity_id"], move["parameter"]) or {}
+    ev.equal(f"{prefix}: {move['entity_id']} {move['parameter']} after the move",
+             (current.get("value"), current.get("unit")), (move["outlet_height_m"], "m"))
+    aid, record, previous = _nozzle_assumption(before, move)
+    assumptions = project["model"]["assumptions"]
+    ev.equal(f"{prefix}: changed quantity cites the fresh assumption {aid}", current.get("assumption_id"), aid)
+    ev.equal(f"{prefix}: fresh assumption {aid} records this scenario (old/new values, supersedes {previous})",
+             assumptions.get(aid), record)
+    original = before["model"]["assumptions"]
+    ev.equal(f"{prefix}: original assumption records unchanged",
+             {key: assumptions.get(key) for key in original}, original)
+    ev.equal(f"{prefix}: exactly one assumption added", sorted(set(assumptions) - set(original)), [aid])
 
 
 def _records(document):
@@ -202,6 +312,7 @@ def _legend_and_index(ev, where, project, expected, prefix):
     ev.equal(f"{prefix}: legend entries == keys used on the P&ID", sorted(set(entries)), sorted(used))
     ev.equal(f"{prefix}: inventory keys == keys used on the P&ID", sorted(inventory["keys"]), sorted(used))
     ev.equal(f"{prefix}: legend key count", len(set(entries)), expected["legend_keys"])
+    ev.equal(f"{prefix}: item index count", len(index["items"]), expected["index_items"])
     model = project["model"]
     tagged = {i: e["tag"] for i, e in model["entities"].items()}
     tagged.update({i: c["tag"] for i, c in model["connections"].items()})
@@ -311,17 +422,18 @@ def core_lane(ev, expected):
     for key in RECORDS:
         ev.equal(f"undo + reload: {key} record restored exactly", _digest(restored[key]), _digest(baseline[key]))
 
-    # Explicit nozzle move: the tank outlet height moves the outlet nozzle; its current route must be invalidated.
-    outlet_routes = _tank_outlet_routes(document["current"])
-    command = {"id": "cmd-reference-nozzle-move", "expected_revision": 2, "type": "set_parameter",
-               "payload": {"entity_id": TANK, "name": "outlet_height",
-                           "quantity": {"value": expected["nozzle_move"]["outlet_height_m"], "unit": "m",
-                                        "assumption_id": "asm-tank-dimensions"}}}
+    # Explicit nozzle move (declared in the expectations; the tank outlet height in the fixture) moves a nozzle;
+    # its current route must be invalidated.
+    nozzle = expected["nozzle_move"]
+    outlet_routes = _entity_routes(document["current"], nozzle["entity_id"])
+    before_move = copy.deepcopy(document["current"])
+    command = _nozzle_move(ev, document["current"], nozzle, "cmd-reference-nozzle-move", 2, "core nozzle move")
     command_path = os.path.join(base, "nozzle-move.command.json")
     _write_json(command_path, command)
     ev.run(cli + ["apply", project_path, command_path], 0, "apply nozzle move r2 -> r3")
     document = load_document(project_path)
     project = document["current"]
+    _nozzle_moved(ev, project, nozzle, before_move, "core nozzle move")
     _route_invalidation_checks(ev, project, baseline, outlet_routes, "core nozzle move")
     ev.run(cli + ["validate", project_path], 3, "validate r3 reports valid but incomplete")
     r3 = draft("drafting-r3", expect=2)  # the open route item makes every drafting output pending (exit 2)
@@ -345,9 +457,9 @@ def core_lane(ev, expected):
         ev.keep(f"core/drafting-r0/{name}", os.path.join(r0, name))
 
 
-def _tank_outlet_routes(project):
+def _entity_routes(project, entity_id):
     model = project["model"]
-    ports = {p for p, port in model["ports"].items() if port["entity_id"] == TANK}
+    ports = {p for p, port in model["ports"].items() if port["entity_id"] == entity_id}
     return sorted(c for c, conn in model["connections"].items() if conn["from_port_id"] in ports
                   or conn["to_port_id"] in ports)
 
@@ -580,13 +692,13 @@ def cad_lane(ev, expected, timeout):
             ev.equal(f"undo + save + reload: {key} record restored exactly", _digest(records[key]),
                      _digest(baseline[key]))
 
-        moved = _tank_outlet_routes(state["project"])
-        svc.svc.command({"id": "cmd-ref-nozzle", "expected_revision": 2, "type": "set_parameter",
-                         "payload": {"entity_id": TANK, "name": "outlet_height",
-                                     "quantity": {"value": expected["nozzle_move"]["outlet_height_m"], "unit": "m",
-                                                  "assumption_id": "asm-tank-dimensions"}}})
+        nozzle = expected["nozzle_move"]
+        moved = _entity_routes(state["project"], nozzle["entity_id"])
+        before_move = copy.deepcopy(state["project"])
+        svc.svc.command(_nozzle_move(ev, state["project"], nozzle, "cmd-ref-nozzle", 2, "nozzle move"))
         state = svc.wait("r3 pending build")
         project = state["project"]
+        _nozzle_moved(ev, project, nozzle, before_move, "nozzle move")
         ev.equal("nozzle move: build is pending, not complete", state["build"]["status"], "pending")
         ev.equal("nozzle move: sync state pending", state["sync"]["state"], "pending")
         ev.equal("nozzle move: last complete publication retained", (state["published"] or {}).get("build_id"),
@@ -654,12 +766,15 @@ def main(argv=None):
                   "requirements-cad.txt into a Python 3.12 virtual environment", file=sys.stderr)
             return EXIT_USAGE
     try:
+        expected = load_expected(args.expected)
+    except ValueError as exc:
+        print(f"error: --expected {exc}; nothing was written", file=sys.stderr)
+        return EXIT_USAGE
+    try:
         output = _prepare_output(args.output)
     except SystemExit as exc:
         print(exc, file=sys.stderr)
         return EXIT_USAGE
-    with open(args.expected, encoding="utf-8") as handle:
-        expected = json.load(handle)
     ev = Evidence(output)
     evidence = {"format": EVIDENCE_FORMAT, "started_at": _now(), "lanes": ["core"] + (["cad"] if args.cad else []),
                 "python": platform.python_version(), "platform": f"{platform.system()} {platform.machine()}",

@@ -9,7 +9,7 @@ From a clean checkout to a working core, the five-output workspace, and the chec
 | Linux or macOS (POSIX) | everything | Persistence and the service use `flock`, process groups and POSIX signals. Windows is not supported. |
 | Python 3.12 | everything | The core uses only the standard library. The CAD requirements are pinned for Python 3.12. |
 | Git | cloning | |
-| Blender (optional) | the offline `.blend` bundle and its integration tests | Any executable you point to with `--blender` or `SKID_BLENDER`. |
+| Blender (optional) | the offline `.blend` bundle and its integration tests | Any executable you point to with `--blender` or `SKID_BLENDER`. Blender 5.1.1 is the verified version; other versions are untested. |
 | Node.js 22 and npm (optional) | UI unit tests; Playwright browser checks | Node.js 22 is the verified target; older versions are untested (the quoted test glob below relies on `node --test` glob support). The web UI itself needs **no** npm install and no build step; Three.js 0.170.0 is vendored under `web/vendor/`. |
 | Claude Code CLI with a Claude Max login (optional) | Engineering plan, broad Ask and equipment research | See [section 6](#6-optional-ai-planning). Not needed for anything else. |
 
@@ -58,7 +58,7 @@ python -m pip install -r requirements-cad.txt
 python -c "import cadquery; print(cadquery.__version__)"     # 2.6.1
 ```
 
-`requirements-cad.txt` pins `cadquery==2.6.1` and applies `constraints-cad.txt`. That file records the exact versions of one audited environment: CPython 3.12 on macOS arm64. A clean install on another platform may need different wheels or fail. Record `python -m pip freeze` with any results you report. Dependency licences are listed in [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
+`requirements-cad.txt` pins `cadquery==2.6.1` and applies `constraints-cad.txt`. That file records the exact versions of one audited environment: CPython 3.12 on macOS arm64. A cold install of these pins into a new virtual environment (no system site packages) was verified on macOS arm64 with Python 3.12 at source commit `6026f62`; other platforms and Python versions are untested and may need different wheels or fail. See the [repository assessment](REPOSITORY_ASSESSMENT.md) for the recorded run. Record `python -m pip freeze` with any results you report. Dependency licences are listed in [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).
 
 Start the service on a project file you own. It refuses anything under `examples/`, and it never creates a project:
 
@@ -85,12 +85,22 @@ python -m skid.geometry recipe examples/recipes/horizontal_drum.recipe.json work
 python -m unittest discover -s tests -p 'test_*.py'
 ```
 
-Without CadQuery installed, the CAD-dependent tests are skipped with a stated reason. Without `SKID_BLENDER`, the real-Blender integration test is skipped. Read the summary line: a run with skips does not cover those parts. To include Blender:
+Without CadQuery installed, the CAD-dependent tests are skipped with a stated reason. Without `SKID_BLENDER`, the real-Blender integration test is skipped. Read the summary line: a run with skips does not cover those parts. To include Blender (5.1.1 verified; other versions untested):
 
 ```sh
 SKID_BLENDER=/path/to/blender python -m unittest discover -s tests -p 'test_*.py'
 /path/to/blender --background --factory-startup --python-exit-code 1 --python tests/blender_smoke.py
+SKID_BLENDER=/path/to/blender sh scripts/check_blender.sh     # the smoke test plus the real-Blender integration tests
 ```
+
+`tests/blender_smoke.py`, run directly or through `scripts/check_blender.sh`, writes its previews and bundles to `artifacts/blender-preview/`. That directory is ignored by Git.
+
+**Expected skips in a clone of this repository.** Even with CadQuery and `SKID_BLENDER` set, some tests skip on purpose, and each prints its reason:
+
+- 3 workspace-manifest tests in `tests/test_release_packaging.py` apply only to the private source workspace. In a clone, the shipped-manifest and re-export checks run in their place and must pass.
+- 8 replay cases in `tests/test_research_bridge.py` and `tests/test_research_brief.py` need recorded real research streams. Those raw transcripts are private and are not shipped.
+
+These 11 skips are expected. The real-Blender integration test also skips when `SKID_BLENDER` is unset. The legacy geometry-recipe and `creation-r3` regressions now read committed fixtures under `tests/fixtures/` and always run. Do not delete or skip tests, or add raw model or authentication streams, to reach zero skips. For reference, the full suite at commit `6026f62` reported 12 skips, the 11 above plus the `creation-r3` case before its fixture was committed. Final counts for the current revision are pending verification.
 
 Some environments, such as sandboxes and headless machines without a GPU, can prevent Blender from starting; see [troubleshooting](TROUBLESHOOTING.md#blender).
 
@@ -110,6 +120,8 @@ node --test "tests/browser/unit/*.test.mjs"
 npx playwright install chromium          # downloads a browser build; only for the browser scenarios
 node tests/browser/workflow.e2e.mjs      # starts its own service on a free port with a fresh project
 ```
+
+`npm ci` installs only `playwright`, `playwright-core` and, on macOS, the optional `fsevents` package. It does not install `@playwright/test` or Three.js; Three.js is vendored. npm may warn about the `fsevents` install script. That warning does not affect the checks and needs no permission or global setting change.
 
 Browser scenarios use `SKID_PYTHON` (default `.venv-cad/bin/python`) to start the service. They also use `SKID_BROWSER_ARGS`, a JSON array of Chromium arguments, to override the platform's WebGL flags, and `UI_REVIEW_DIR` to choose where captures go. Scenarios named `engineering`, `creation` and similar use **labelled fake** planners. They test the application path, not a real model.
 
@@ -131,6 +143,23 @@ python -m skid.cli status work/skid.json                                # synchr
 ```
 
 This is the original two-view path: the legacy SVG plus a `.blend` file. It does not produce STEP, the legend or the description, and it shows composed equipment only as an explicit placeholder. The Blender adapter runs inside Blender's Python API. Its distribution terms are an open owner decision ([THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)).
+
+## 8. Exporting a source copy (optional)
+
+`scripts/export_release.py` uses only the standard library. It copies exactly the files listed in `scripts/release_manifest.json`:
+
+```sh
+python scripts/export_release.py --check                                  # plan, read and scan; writes nothing
+python scripts/export_release.py --output release/candidate [--git-init]  # a new or empty directory
+```
+
+`--output` must name a new or empty directory; nothing is overwritten. The copy is assembled in a fresh sibling directory and then renamed into place. A report, `<output>.export.json`, is written beside the copy. `--git-init` runs `git init` in the copy and stages its files. The exporter never commits, adds a remote or pushes.
+
+Exit status: `0` exported (or the check passed); `1` refused, nothing exported; `2` usage error; `3` partial: the copy exists, but a later step such as the requested Git setup failed.
+
+`release/` is a safe default. It is never exported and is ignored by Git. Do not put an output inside an exported tree such as `skid/` or `tests/`, because a later export could include an earlier copy. Do not rely on the exporter to detect this.
+
+Local output bundles and copies are yours to make. Publishing a repository anywhere external, and choosing its license, are always decisions for the project owner.
 
 ## Next
 

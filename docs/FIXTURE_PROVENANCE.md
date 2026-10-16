@@ -1,6 +1,6 @@
 # Fixture provenance
 
-This note records where the committed test and example fixtures came from. The data values in them are frozen regression data. Only their descriptive metadata fields (`generated_by`, `_source`) were rewritten to remove references to private workspace files. No value, case, expected output or assertion was changed.
+This note records where the committed test and example fixtures came from. The data values in them are frozen regression data. In the fixtures that have them, only the descriptive metadata fields (`generated_by`, `_source`) were rewritten to remove references to private workspace files. `tests/fixtures/legacy_geometry_recipe.json` and `tests/fixtures/creation-r3.json` are unmodified byte-for-byte copies. No value, case, expected output or assertion was changed.
 
 ## `examples/pump_skid.json`: synthetic pump skid
 
@@ -37,3 +37,24 @@ This holds the fields the follow-up UI uses, copied unchanged from one real engi
 - **The reply:** status `questions` with 8 questions. It was produced by `claude-opus-5-5` through the local Claude Code CLI on a Claude Max subscription. Effort was requested as `xhigh`, which was the setting at that time; the app now requests `medium`.
 
 The original capture and its run record are not included. `tests/browser/fake_planner_service.py`, `tests/browser/engineering.e2e.mjs` and `tests/browser/unit/plan-model.test.mjs` use it as realistic UI input. **The questions and reasons are model output kept as test data; they are not independent engineering advice.**
+
+## `tests/fixtures/legacy_geometry_recipe.json`: legacy geometry snapshot
+
+This is the `geometry.recipe.json` that the geometry generator (`skid.geometry` 0.2.0, schema `skid.geometry.snapshot-recipe/1`) wrote on 2026-10-14 for revision 0 of the synthetic pump skid above (`project-pump-skid`, input digest `64f83f2f…7a68`). It is kept byte for byte: 95,797 bytes, SHA-256 `e24b43cd70d73c7b0fc65bb411862968e56552344039f61428ee43ea94dcdb15`.
+
+- **Why it is kept:** it predates the `recipe_sha256` content digest. `tests/test_cad_snapshot.py` checks that a rebuild of this real earlier snapshot is refused with the actionable "legacy schema" error.
+- **What it contains:** deterministic generator output only. The assumption texts repeat the fixture's own prototype assumptions, and the `rcp-*` texts come from the generator's recipes. No language model was involved. The `@` characters are generator version suffixes (`tank@1`) and the rotation formula `Rz @ Ry @ Rx`.
+- **Privacy check (2026-10-16):** no file-system paths, e-mail addresses, user or account names, session data, credentials, URLs or local ports.
+
+## `tests/fixtures/creation-r3.json`: actual empty-start creation, revision 3
+
+This is the sealed `snapshot.json` of the build `b20261016T073800-r3-7dd44c9c`, written on 2026-10-16 during an acceptance run of empty-project creation in the local application. The run used a separate test project, `project-root-actual-creation` ("Water Transfer Skid"); it is not a user's project. The copy is byte for byte: 68,840 bytes, SHA-256 `96b5730778bd4d16019d116d4e74e937a100a6b189298c483682553ab8dc5228`. It is a complete project document at revision 3 with empty undo/redo history.
+
+- **What it shows:** a pump flow (TK-101 → HV-101 → HV-102 → P-101 → OUT-101), plus HX-101 added as a draft shell-and-tube exchanger with all four ports deliberately unconnected. `tests/test_creation_title.py` uses it to check that the drawing title no longer joins HX-101 to the pump flow.
+- **It contains captured model output.** Three engineering-plan proposals (`prop-52cd46e497d9`, `prop-a1ae86617e3a`, `prop-9aab196f94c2`) were produced by `claude-opus-5-5` through the local Claude Code CLI, with effort requested as `xhigh` (the setting at that time; the app now requests `medium`). Each was reviewed before it was applied, and its `source` strings say so. The HX-101 definition and its assumption texts are model-written. Route assumptions come from the local deterministic rerouting helper. **Model output kept as test data is not engineering advice, and no dimension in it is a design value.**
+- **It cites public web sources.** The HX-101 proposal used the app's optional text research (`res-9aab196f94c2`, 4 retained sources). The assumption `source` strings and one description name and link these pages: alfalaval.com (shell-and-tube product page), bendel.com (fabrication article), wermac.org (heat exchanger part 5) and engineersedge.com (shell-and-tube review). The fixture holds only URLs and short model-written summaries attributed to them. No page content was stored, and the summaries were not compared word for word with the pages.
+- **Privacy check (2026-10-16):** no file-system paths, e-mail addresses, user or account names, session or authentication data, credentials or local ports. The only reference to a person is the generic model-written phrase "Water is the user's description only". Raw model transcripts, the run records and the research brief are not included.
+
+**Owner decisions still open.** Publishing either file is the owner's decision. For `creation-r3.json` this covers the captured model output and the third-party URLs and names. Neither file is approved for publication: they are included only in the private candidate being prepared. The project's own license is also undecided. If either file is not approved, replace it with a reproducible derivative and keep the tests' assertions. No professional or engineering review of either file has taken place.
+
+Other tests replay raw, real model streams. Those streams stay private and are not copied into this repository; the tests that need them skip in a clean checkout.
