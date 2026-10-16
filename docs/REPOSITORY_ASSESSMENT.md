@@ -1,6 +1,42 @@
 # Repository preparation assessment
 
-Prepared 2026-10-16. **Private review candidate; no GitHub remote or publication, and no project license selected.** These are software results, not professional engineering approval.
+Prepared 2026-10-16. These are software results, not professional engineering approval or a legal opinion.
+
+## Release decisions and current status
+
+On 2026-10-16 the owner made these decisions:
+
+- **Publication:** publish this repository publicly as `nusretfurkan/3d-with-pid` after the final checks below.
+- **Licence:** MIT by default, with seven GPL-3.0-or-later Blender integration files (`skid/adapters/blender.py`, `skid/adapters/blender_runner.py`, `skid/adapters/blender_support/{scene,preview,run_build}.py`, `tests/blender_smoke.py`, `tests/test_geometry_contract.py`). Vendored Three.js keeps its own MIT licence and copyright. Details, the generated-deliverables permission and limits are in [LICENSING.md](LICENSING.md); it is a reasoned assessment, not a legal opinion.
+- **Fixtures:** keep the retained, audited regression fixtures ([fixture provenance](FIXTURE_PROVENANCE.md)). This approves publication, not their engineering values.
+- **Media:** add README examples and screenshots made from the synthetic example by the project's own software ([provenance](media/PROVENANCE.md)); MIT project material.
+- **Security reports:** GitHub private vulnerability reporting ([SECURITY.md](../SECURITY.md)).
+
+Changes made after the verified commit `827d6b7`/`7f16877` for this release: `LICENSE`, `NOTICE`, `LICENSES/GPL-3.0-or-later.txt` and [LICENSING.md](LICENSING.md); SPDX headers on the seven GPL files; `skid/build.py` reads adapter constants from the MIT `blender_support.plan` instead of importing the GPL adapter, with a new import-boundary test; exporter support for the two individually reviewed PNG files, with packaging tests; the `docs/media/` files and README screenshots and examples; and documentation updates for these decisions. The earlier licensing-options proposal was superseded by LICENSING.md and is not part of the repository.
+
+## Local release verification (2026-10-16)
+
+The GPT orchestrator independently ran the approved release changes on macOS arm64, Python 3.12.15 and Node.js 22, using the environment cold-installed during the earlier reproduction. No dependency pins changed; this was **not another cold install or fresh-context reproduction**.
+
+| Check | Demonstrated result |
+| --- | --- |
+| Full Python suite, real CadQuery/OCCT and Blender enabled | **1,047 tests: 1,036 passed, 11 skipped, zero failures/errors**, 223.833 seconds |
+| Real five-output reference (`scripts/reference.py --cad`) | **288/288 checks passed**; generation, engineering edits, rerouting status, undo and output verification |
+| Node UI unit tests | **197/197 passed**, no skips |
+| Blender-specific verification | **1,789 smoke checks and 5/5 integration tests passed** after the import change |
+| Import boundary | **3/3 tests passed**; the new probe fails against the prior import (two failing entry-point subtests), so it detects the coupling removed |
+| Packaging and reviewed-image checks | **43 tests: 40 passed, 3 workspace-only skips**; original assertions preserved, new negative controls fail against the earlier implementation |
+| Actual README screenshots | A real isolated service built revision 0 of the synthetic example; 3D and P&ID were synchronized, with no console/page errors; original PNGs independently decoded and visually reviewed |
+
+The 11 full-suite skips are the same three private-workspace manifest checks and eight excluded recorded-provider replay cases described below. Public-manifest/self-export checks actually run; Blender is not skipped. The screenshots are actual app captures, not proof of a new full browser-workflow or external model run. Earlier browser 9/9 and cold-install results remain separately identified below.
+
+Independent software review found no blocker in the actual reviewed screenshots/export. It identified narrower image-format and documentation improvements: approved PNGs now permit only 8-bit RGB/greyscale, duplicate top-level image approvals are refused, and the tool explicitly does not inspect pixels, compressed image contents, OCR or steganography. The exact approved screenshots have no metadata and remain byte-identical to the decoded and visually reviewed files. Their hashes and provenance are in [media/PROVENANCE.md](media/PROVENANCE.md). No assertion was weakened or fixture value changed.
+
+The curated contents comprise 296 files, including two individually hash-approved PNGs and the original generated SVG preview. A pattern scan found no credentials or personal home paths; the existing three-commit preparation history was also scanned (305 blobs, zero findings for these patterns). Scans do not certify the absence of every secret. No environments, raw transcripts, dependency binaries, user workspaces or parallel distillation work are included.
+
+This local record was prepared before the initial public push to [nusretfurkan/3d-with-pid](https://github.com/nusretfurkan/3d-with-pid). GitHub execution evidence is recorded in [Actions](https://github.com/nusretfurkan/3d-with-pid/actions/workflows/ci.yml); no remote result is inferred from local checks. The exact published commit and Git tree identify the public source; the owner also retains a separate hash inventory and Git bundle. Documentation-only reconciliation after the test run does not change the tested runtime, tests, generators or dependency pins.
+
+The following sections preserve the earlier preparation and fresh-agent evidence; their counts are historical, rather than substitutes for this release verification.
 
 ## Clean-checkout reproduction
 
@@ -75,12 +111,12 @@ The [initial audit](PUBLIC_CONTENTS_AUDIT.md) records findings at the start of p
 | F1/F2 personal CLI defaults | Both use the operator's `claude` on PATH; explicit override and strict model/auth/tool checks retained |
 | F3–F5 private paths, history and unavailable doc links | Portable top-level instructions and 19 current technical summaries replace private originals; all candidate Markdown links/anchors checked with zero problems |
 | F6 private fixture provenance paths | Metadata/comments made self-contained; numerical regression data preserved; origins documented in [fixture provenance](FIXTURE_PROVENANCE.md) |
-| F7 owner-edited/model-output fixtures | Origins and timestamps disclosed; publication remains an owner decision. Added legacy and creation snapshots were scanned before byte-exact copying; captured research summaries/URLs are not vendor-data redistribution permission |
+| F7 owner-edited/model-output fixtures | Origins and timestamps disclosed; the owner approved publishing the retained fixtures on 2026-10-16 (not an engineering approval). Added legacy and creation snapshots were scanned before byte-exact copying; captured research summaries/URLs are not vendor-data redistribution permission |
 | F8 private browser-tool install | Public `npm ci` with exact Playwright 1.58.2 and integrity-pinned lock; used by the cold reproduction |
 | F9 unaudited transitive resolution | One 39-pin constraints file, matching the [license inventory](DEPENDENCY_INVENTORY.json), actually cold-installed on macOS arm64 / Python 3.12 |
-| F10 Blender API distribution | **Open owner/legal decision**; a subprocess does not resolve the API-script licensing question |
+| F10 Blender API distribution | Owner decision 2026-10-16: the seven Blender API files are GPL-3.0-or-later, everything else project-authored is MIT ([LICENSING.md](LICENSING.md)); a subprocess is not asserted to change those files' terms. Boundary test result pending final verification |
 
-The candidate scan found no credentials, real account IDs or personal home paths in tracked content. The only home-path/e-mail pattern matches are identified synthetic negative-test strings. Vendored Three.js hashes and its MIT notice are preserved. No dependency binaries, downloaded reference assets, local skill bundles, raw transcripts, environments or user workspaces are tracked. The project `LICENSE` is deliberately absent pending the owner. Dependency binary notice uncertainties remain relevant to any future binary release ([third-party notices](../THIRD_PARTY_NOTICES.md)).
+The candidate scan found no credentials, real account IDs or personal home paths in tracked content. The only home-path/e-mail pattern matches are identified synthetic negative-test strings. Vendored Three.js hashes and its MIT notice are preserved. No dependency binaries, downloaded reference assets, local skill bundles, raw transcripts, environments or user workspaces are tracked. At that time the project `LICENSE` was deliberately absent pending the owner; it has since been added (see the release decisions above). Dependency binary notice uncertainties remain relevant to any future binary release ([third-party notices](../THIRD_PARTY_NOTICES.md)).
 
 The local Git commit was made by a separate orchestration step after export, using a neutral automation identity. The initial export report describes export-time state, including then-uncommitted files; the final Git tree/review inventory identifies the reviewed source. No remote is configured.
 
@@ -90,6 +126,6 @@ One authoritative engineering document, permanent IDs, and separate semantics, P
 
 Qualified independent process, mechanical, piping and drafting review is **outstanding**. No connected professional reviewer was available and no external review request was sent. [Engineering review criteria](ENGINEERING_REVIEW.md) define acceptance and the required reviewer-of-record evidence. No automated agent counts as that signoff.
 
-Owner decisions before external publication: project license; Blender adapter distribution terms; retained owner-edited/model-output fixtures; final source inventory/publication approval; a private vulnerability reporting contact. Preparing this private candidate does not approve those decisions. The four existing user project/history documents remained byte-identical, and existing preview services were not restarted.
+The owner decisions that were open at the end of preparation (project licence, Blender adapter terms, retained fixtures, publication approval and a vulnerability-reporting route) were made on 2026-10-16; see the release decisions above. Publication still depends on the final verification. The four existing user project/history documents remained byte-identical, and existing preview services were not restarted.
 
 All implementation/review executors were verified as exact `claude-opus-5-5` through Claude Max with API-key source `none`, requested `medium`; applied effort is not echoed. Audit WebSearch also accounted for the CLI-internal Haiku retrieval helper, disclosed separately from the Opus assistant. No API-key billing, fallback assistant or global tool/configuration change was used.

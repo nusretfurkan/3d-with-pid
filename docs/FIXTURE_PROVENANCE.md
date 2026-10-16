@@ -1,6 +1,8 @@
 # Fixture provenance
 
-This note records where the committed test and example fixtures came from. The data values in them are frozen regression data. In the fixtures that have them, only the descriptive metadata fields (`generated_by`, `_source`) were rewritten to remove references to private workspace files. `tests/fixtures/legacy_geometry_recipe.json` and `tests/fixtures/creation-r3.json` are unmodified byte-for-byte copies. No value, case, expected output or assertion was changed.
+This note records where the committed test and example fixtures came from. On 2026-10-16 the owner approved publishing all of the retained, audited fixtures described here. That approval covers publication only; it is not engineering approval of any value, and no professional engineering review of these fixtures has taken place. Their bytes and the origins recorded below are unchanged. Like other project-authored material they are MIT-licensed ([licensing](LICENSING.md)); third-party pages they cite by URL are references, not licensed material.
+
+The data values in them are frozen regression data. In the fixtures that have them, only the descriptive metadata fields (`generated_by`, `_source`) were rewritten to remove references to private workspace files. `tests/fixtures/legacy_geometry_recipe.json` and `tests/fixtures/creation-r3.json` are unmodified byte-for-byte copies. No value, case, expected output or assertion was changed.
 
 ## `examples/pump_skid.json`: synthetic pump skid
 
@@ -26,7 +28,7 @@ This is a complete project document at revision 47, with empty undo/redo history
 - Seven assumptions from three engineering-plan proposals: the pump motor length, the C-101 column envelope, layout and inlet, the boundary relocation, the L-105 riser route and the L-106 straight route. Each proposal was produced by `claude-opus-5-5` through the local Claude Code CLI and reviewed before apply. Their `source` strings say: "proposed value, reviewed before apply; not a vendor or design value".
 - Four guided reroutes of L-105 and L-106 by the local deterministic rerouting helper (`skid.interactive.rerouting`), timestamped between 2026-10-14T23:32Z and 2026-10-15T14:58Z.
 
-The document contains no names, e-mail addresses or file-system paths. Including it in this candidate is an explicit publication decision for the owner, not a claim that it is synthetic. If it is not approved, replace it with a reproducible synthetic derivative and keep the tests' assertions.
+The document contains no names, e-mail addresses or file-system paths. The owner approved its publication on 2026-10-16. That is a publication decision, not a claim that it is synthetic.
 
 ## `tests/browser/unit/fixtures/real-questions-8.json`: captured planner questions
 
@@ -55,6 +57,6 @@ This is the sealed `snapshot.json` of the build `b20261016T073800-r3-7dd44c9c`, 
 - **It cites public web sources.** The HX-101 proposal used the app's optional text research (`res-9aab196f94c2`, 4 retained sources). The assumption `source` strings and one description name and link these pages: alfalaval.com (shell-and-tube product page), bendel.com (fabrication article), wermac.org (heat exchanger part 5) and engineersedge.com (shell-and-tube review). The fixture holds only URLs and short model-written summaries attributed to them. No page content was stored, and the summaries were not compared word for word with the pages.
 - **Privacy check (2026-10-16):** no file-system paths, e-mail addresses, user or account names, session or authentication data, credentials or local ports. The only reference to a person is the generic model-written phrase "Water is the user's description only". Raw model transcripts, the run records and the research brief are not included.
 
-**Owner decisions still open.** Publishing either file is the owner's decision. For `creation-r3.json` this covers the captured model output and the third-party URLs and names. Neither file is approved for publication: they are included only in the private candidate being prepared. The project's own license is also undecided. If either file is not approved, replace it with a reproducible derivative and keep the tests' assertions. No professional or engineering review of either file has taken place.
+**Publication decision.** On 2026-10-16 the owner approved publishing `pipe-segments-r47.json`, `creation-r3.json` and `real-questions-8.json` as they are, including, for `creation-r3.json`, the captured model output and the third-party URLs and names. The approval does not make the model output engineering advice, and it grants no rights in the cited pages. No professional or engineering review of these files has taken place.
 
 Other tests replay raw, real model streams. Those streams stay private and are not copied into this repository; the tests that need them skip in a clean checkout.

@@ -1,8 +1,9 @@
-# Continuous integration for the pump-skid workspace. Not yet executed on GitHub: the first
-# remote run is the acceptance of this file. The runner image (ubuntu-24.04), action versions,
-# Node 22 setup and the Linux x86_64 wheel resolution of constraints-cad.txt are therefore
-# unverified; local runs were on macOS arm64 with Python 3.12 and Node 22. No job uses
-# a language model, API key, secret, Blender or network service beyond package downloads.
+# Continuous integration for the pump-skid workspace. This file was initially prepared from local
+# verification on macOS arm64 with Python 3.12 and Node 22. The runner image (ubuntu-24.04),
+# action versions, Node 22 setup, the Linux x86_64 wheel resolution of constraints-cad.txt and
+# the browser lane are confirmed only by actual GitHub runs; docs/REPOSITORY_ASSESSMENT.md records
+# the current status. No job uses a language model, API key, secret, Blender or network service
+# beyond package downloads.
 #
 # Lanes:
 #   core     Python 3.12 standard library only: the Python suite (CadQuery/Blender tests skip

@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright 2026 nusretfurkan
+# Blender integration file: licensed under the GNU General Public License v3.0 or later,
+# not the project's default MIT License. See LICENSES/GPL-3.0-or-later.txt and docs/LICENSING.md.
 """Geometry and mapping contract of the Blender adapter, checked without Blender.
 
 These tests plan the shared fixture with ``skid.adapters.blender_support.plan``

@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright 2026 nusretfurkan
+# Blender integration file: licensed under the GNU General Public License v3.0 or later,
+# not the project's default MIT License. See LICENSES/GPL-3.0-or-later.txt and docs/LICENSING.md.
 """Realize an adapter plan in the running Blender session.
 
 Ownership. A project's generated data lives in one local root collection

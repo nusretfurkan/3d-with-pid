@@ -1,6 +1,6 @@
 {
  "format": "skid-release-manifest/1",
- "_comment": "Release manifest of this repository: python scripts/export_release.py --check, or --output DIR to export a copy. Paths are relative to the repository root. Every listed file must exist; trees are copied recursively minus exclude_names/exclude_suffixes; optional_files are copied only when present and are reported as absent otherwise. Nothing else is copied. (Generated as the portable overlay of the private workspace manifest; it has no templates.)",
+ "_comment": "Release manifest of this repository: python scripts/export_release.py --check, or --output DIR to export a copy. Paths are relative to the repository root. Every listed file must exist; trees are copied recursively minus exclude_names/exclude_suffixes; optional_files are copied only when present and are reported as absent otherwise. reviewed_images approves the only binary files, each a listed PNG with its exact SHA-256 and a text provenance file. Nothing else is copied. (Generated as the portable overlay of the private workspace manifest; it has no templates.)",
  "templates": {},
  "trees": ["skid", "web", "tests", "examples", "scripts", ".github"],
  "files": [
@@ -8,6 +8,9 @@
   "AGENTS.md",
   "CONTRIBUTING.md",
   "HANDOVER.md",
+  "LICENSE",
+  "LICENSES/GPL-3.0-or-later.txt",
+  "NOTICE",
   "README.md",
   "SECURITY.md",
   "THIRD_PARTY_NOTICES.md",
@@ -31,6 +34,7 @@
   "docs/GETTING_STARTED.md",
   "docs/INPUT_CONTRACTS.md",
   "docs/INTERACTIVE.md",
+  "docs/LICENSING.md",
   "docs/PIPE_SEGMENTS.md",
   "docs/PLANNING.md",
   "docs/PROCESS_NARRATIVE.md",
@@ -41,11 +45,21 @@
   "docs/TROUBLESHOOTING.md",
   "docs/UI.md",
   "docs/WORKFLOW_CONTRACTS.md",
+  "docs/media/PROVENANCE.md",
+  "docs/media/pid.svg",
+  "docs/media/pump-skid.png",
+  "docs/media/workspace.png",
   "package-lock.json",
   "package.json",
   "requirements-cad.txt"
  ],
- "optional_files": ["docs/LICENSING.md", "docs/REPOSITORY_ASSESSMENT.md"],
+ "reviewed_images": {
+  "docs/media/pump-skid.png": {"sha256": "17c0f9bdcf05eacd849862688ccae79da894d3c1aad733149b9eb56dcd53ed3e",
+                               "provenance": "docs/media/PROVENANCE.md"},
+  "docs/media/workspace.png": {"sha256": "03490bdf8f8103cdddbed4d1407a99e5955c6451b31537dff1302e1af8b6a035",
+                               "provenance": "docs/media/PROVENANCE.md"}
+ },
+ "optional_files": ["docs/REPOSITORY_ASSESSMENT.md"],
  "exclude_names": ["__pycache__", ".DS_Store", "node_modules", ".pytest_cache"],
  "exclude_suffixes": [".pyc", ".pyo", ".lock", ".tmp"],
  "forbidden_roots": ["artifacts", "release", "repository", ".agents", ".claude", ".git", ".venv", ".venv-cad",

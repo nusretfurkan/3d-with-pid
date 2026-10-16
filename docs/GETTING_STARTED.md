@@ -16,8 +16,8 @@ From a clean checkout to a working core, the five-output workspace, and the chec
 ## 2. Clone and create an environment
 
 ```sh
-git clone <repository-url> equipment-3d-pid
-cd equipment-3d-pid
+git clone https://github.com/nusretfurkan/3d-with-pid.git 3d-with-pid
+cd 3d-with-pid
 python3.12 -m venv .venv-cad
 . .venv-cad/bin/activate
 python --version            # Python 3.12.x
@@ -142,7 +142,7 @@ python -m skid.cli build work/skid.json --blender /path/to/blender      # exit 0
 python -m skid.cli status work/skid.json                                # synchronized / pending / stale ...
 ```
 
-This is the original two-view path: the legacy SVG plus a `.blend` file. It does not produce STEP, the legend or the description, and it shows composed equipment only as an explicit placeholder. The Blender adapter runs inside Blender's Python API. Its distribution terms are an open owner decision ([THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)).
+This is the original two-view path: the legacy SVG plus a `.blend` file. It does not produce STEP, the legend or the description, and it shows composed equipment only as an explicit placeholder. The Blender adapter runs inside Blender's Python API. Blender is installed separately. The adapter's Blender API files are licensed GPL-3.0-or-later, and the rest of the project is MIT ([licensing](LICENSING.md#gpl-exceptions-blender-integration)).
 
 ## 8. Exporting a source copy (optional)
 
@@ -159,7 +159,7 @@ Exit status: `0` exported (or the check passed); `1` refused, nothing exported; 
 
 `release/` is a safe default. It is never exported and is ignored by Git. Do not put an output inside an exported tree such as `skid/` or `tests/`, because a later export could include an earlier copy. Do not rely on the exporter to detect this.
 
-Local output bundles and copies are yours to make. Publishing a repository anywhere external, and choosing its license, are always decisions for the project owner.
+Local output bundles and copies are yours to make, and copies follow [the licence terms](LICENSING.md). Agents working in this repository publish externally only with the owner's explicit authorisation ([agent instructions](../AGENTS.md#repository-status)).
 
 ## Next
 

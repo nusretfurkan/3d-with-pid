@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright 2026 nusretfurkan
+# Blender integration file: licensed under the GNU General Public License v3.0 or later,
+# not the project's default MIT License. See LICENSES/GPL-3.0-or-later.txt and docs/LICENSING.md.
 """Blender adapter: build a project snapshot into owned Blender data and a blend file.
 
 ``build_blender`` runs inside Blender. This module imports ``bpy`` only when

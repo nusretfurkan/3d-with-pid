@@ -1,7 +1,7 @@
 {
   "schema": "equipment-3d-pid.dependency-inventory/1",
   "recorded": "2026-10-16",
-  "status": "Audit record of package-declared metadata. Not legal advice; declared metadata can be incomplete or wrong. The project's own license is undecided and no LICENSE file is present by deliberate owner choice.",
+  "status": "Audit record of package-declared metadata. Not legal advice; declared metadata can be incomplete or wrong. This is a source-only dependency inventory. The project's own licence was chosen by the owner on 2026-10-16: MIT by default, with GPL-3.0-or-later exceptions for seven Blender integration files; see docs/LICENSING.md for the canonical terms and file mapping.",
   "redistribution": "The proposed source repository redistributes no Python wheels, shared libraries, Node packages, Blender files, browsers or Claude Code binaries. The only third-party files it contains are the vendored Three.js files listed under vendored.",
   "python_cad_environment": {
     "source": ".venv-cad (local, excluded from publication)",
@@ -1178,7 +1178,7 @@
       "name": "Blender",
       "version_observed": "5.1.1",
       "license": "GPL-3.0-or-later (installed distribution's license.md)",
-      "note": "Optional 3D adapter runtime. Project files that import bpy/mathutils are listed in docs/PUBLIC_CONTENTS_AUDIT.md; their distribution terms are an open owner/legal decision and a publication blocker for that code. Running Blender as a subprocess is not asserted to resolve this."
+      "note": "Optional offline 3D output runtime, installed separately and not redistributed. The seven project files that call the Blender Python API or load the modules that do are licensed GPL-3.0-or-later; all other project-authored files are MIT. The exact file list is in docs/LICENSING.md. Running Blender as a subprocess is not asserted to change the terms of those files. Blender is a tool used by this project; it did not contribute to it and does not endorse it."
     },
     {
       "name": "Claude Code CLI",

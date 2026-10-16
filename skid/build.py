@@ -53,8 +53,8 @@ try:
 except ImportError:  # pragma: no cover - non-POSIX platforms have no flock
     fcntl = None
 
-from .adapters import blender as blender_adapter
 from .adapters import pid as pid_adapter
+from .adapters.blender_support import plan as blender_adapter
 from .core import DocumentError, canonical_digest, load_document, validate_project
 from .core.storage import LOCK_SUFFIX
 from .core.validation import SCHEMA_VERSION, normalize_tag

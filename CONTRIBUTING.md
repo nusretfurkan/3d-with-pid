@@ -1,6 +1,11 @@
 # Contributing
 
-Thank you for helping. This repository is a **private review candidate without a chosen licence**. Until the owner selects one, contributions are discussed through issues, and nothing is merged under licence terms that have not been decided. Please do not add a `LICENSE` file or licence headers.
+Thank you for helping. This repository is an engineering prototype. Contributions are accepted under the licence of the files they change ([docs/LICENSING.md](docs/LICENSING.md)): the MIT License for project-authored material, and GPL-3.0-or-later for the seven Blender integration files listed there. By submitting a contribution you confirm that you have the right to contribute it under those terms.
+
+- Do not change `LICENSE`, `NOTICE`, `LICENSES/`, SPDX headers or the licence mapping without the maintainer's agreement.
+- Do not add `bpy` or `mathutils` imports, or imports of the GPL files, to MIT files. Keep Blender API code inside the listed GPL files; `tests/test_blender_license_boundary.py` checks the boundary.
+- If you contribute project-authored material that the software emits into generated deliverables (for example symbol shapes, drawing templates, boilerplate wording or template geometry), you also agree that it is covered by the additional permission for generated deliverables in [docs/LICENSING.md](docs/LICENSING.md#generated-deliverables), in addition to the licence of the files you change.
+- New files are MIT by default and need no header. A new file that calls Blender's API must be agreed first, because it changes the licence mapping.
 
 ## Before you start
 

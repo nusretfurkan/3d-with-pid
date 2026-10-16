@@ -38,4 +38,4 @@ exact commands and their actual results (counts, skips, failures)
 
 ## Licence
 
-This repository has no chosen licence yet. Do not add licence files or headers.
+Contributions are accepted under the licence of the files they change ([docs/LICENSING.md](../docs/LICENSING.md)): MIT by default, GPL-3.0-or-later for the seven listed Blender integration files. Keep the current MIT/GPL file mapping, SPDX headers and third-party licence and notice texts as they are. Do not change `LICENSE`, `NOTICE`, `LICENSES/`, SPDX headers, the licence mapping or third-party notices without the owner's approval.

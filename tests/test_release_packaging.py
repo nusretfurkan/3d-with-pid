@@ -14,14 +14,17 @@ directory and a negative control with a deliberately wrong expectation.
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import json
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
 import unittest
+import zlib
 from pathlib import Path
 from unittest import mock
 
@@ -273,6 +276,307 @@ class ExporterTests(unittest.TestCase):
         (self.src / "notes.txt").unlink()
         with self.assertRaises(export_release.Refused):
             export_release.check(str(self.src), str(path))
+
+
+def png_chunk(kind, body):
+    return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", zlib.crc32(kind + body) & 0xFFFFFFFF)
+
+
+def tiny_png(width=3, height=2, before_idat=(), after_idat=(), rows=None, colour=2, level=9):
+    """A real, complete RGB PNG built with the standard library (only IHDR/IDAT/IEND unless chunks are added)."""
+    if rows is None:
+        rows = b"".join(b"\x00" + bytes((40 * y % 256, 120, 200)) * width for y in range(height))
+    ihdr = png_chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, colour, 0, 0, 0))
+    return (export_release.PNG_SIGNATURE + ihdr + b"".join(before_idat) + png_chunk(b"IDAT", zlib.compress(rows, level)) + b"".join(after_idat)
+            + png_chunk(b"IEND", b""))
+
+
+class ReviewedImageTests(unittest.TestCase):
+    """Individually reviewed PNGs: the only binary exception, bound to exact bytes, path and a provenance text."""
+
+    setUp_text = ExporterTests.setUp
+    export = ExporterTests.export
+    refused = ExporterTests.refused
+    stages = ExporterTests.stages
+    IMAGE = "docs/media/screen.png"
+
+    def setUp(self):
+        self.setUp_text()
+        self.image = tiny_png()
+        (self.src / "docs" / "media").mkdir(parents=True)
+        (self.src / self.IMAGE).write_bytes(self.image)
+        (self.src / "docs" / "MEDIA.md").write_text("screen.png: reviewed capture of the synthetic example\n")
+        self.manifest["files"] = ["notes.txt", "docs/MEDIA.md", self.IMAGE]
+        self.manifest["reviewed_images"] = {self.IMAGE: self.approval()}
+
+    def approval(self, data=None, provenance="docs/MEDIA.md"):
+        return {"sha256": hashlib.sha256(self.image if data is None else data).hexdigest(), "provenance": provenance}
+
+    def approve(self, data):
+        """Approve ``data`` exactly, so a refusal can only come from its structure, never from the digest."""
+        (self.src / self.IMAGE).write_bytes(data)
+        return {self.IMAGE: self.approval(data)}
+
+    def test_exact_reviewed_png_is_exported_checked_and_reexported(self):
+        report, _ = self.export()
+        out = self.src / "release" / "github"
+        self.assertEqual((out / self.IMAGE).read_bytes(), self.image)
+        (entry,) = [f for f in report["files"] if f["path"] == self.IMAGE]
+        self.assertEqual(entry, {"path": self.IMAGE, "bytes": len(self.image), "mode": "644",
+                                 "sha256": hashlib.sha256(self.image).hexdigest(), "type": "image/png",
+                                 "width": 3, "height": 2, "provenance": "docs/MEDIA.md"})
+        self.assertNotIn("type", [f for f in report["files"] if f["path"] == "notes.txt"][0])  # text entries unchanged
+        summary = export_release.check(str(self.src), str(self.src / "manifest.json"))
+        self.assertEqual((summary["files"], summary["reviewed_images"]), (6, [self.IMAGE]))
+        text_only = dict(self.manifest, files=["notes.txt"])
+        del text_only["reviewed_images"]
+        (self.src / "text.json").write_text(json.dumps(text_only))
+        self.assertNotIn("reviewed_images", export_release.check(str(self.src), str(self.src / "text.json")))
+        # The candidate carries its manifest and exporter and re-exports the image byte-identically.
+        (self.src / "scripts").mkdir()
+        shutil.copyfile(ROOT / "scripts" / "export_release.py", self.src / "scripts" / "export_release.py")
+        listed = ["README.md", "notes.txt", "docs/MEDIA.md", self.IMAGE]
+        (self.src / "scripts" / "release_manifest.json").write_text(json.dumps(dict(
+            self.manifest, templates={}, trees=["scripts"], files=listed, optional_files=[], max_file_bytes=1 << 20)))
+        first, _ = export_release.export(str(self.src), str(self.src / "scripts" / "release_manifest.json"),
+                                         str(self.src.parent / "one"))
+        candidate = self.src.parent / "one"
+        script = str(candidate / "scripts" / "export_release.py")
+        done = subprocess.run([sys.executable, "-I", script, "--check"], capture_output=True, text=True, timeout=120)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        self.assertIn("reviewed PNG images: 1", done.stdout)
+        self.assertIn("pixels are not inspected", done.stdout)
+        done = subprocess.run([sys.executable, "-I", script, "--output", str(self.src.parent / "two")],
+                              capture_output=True, text=True, timeout=120)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        second = json.loads((self.src.parent / "two.export.json").read_text())
+        self.assertEqual(second["files"], first["files"])
+        self.assertEqual(second["inventory_sha256"], first["inventory_sha256"])
+        self.assertEqual((self.src.parent / "two" / self.IMAGE).read_bytes(), self.image)
+
+    def test_unapproved_png_is_still_refused_as_binary(self):
+        self.refused(f"{self.IMAGE}: not UTF-8", reviewed_images={})
+        manifest = dict(self.manifest)
+        del manifest["reviewed_images"]
+        self.manifest = manifest
+        self.refused(f"{self.IMAGE}: not UTF-8")
+        # Another PNG beside an approved one gains nothing from the path suffix or the other approval.
+        self.manifest = dict(manifest, reviewed_images={self.IMAGE: self.approval()})
+        (self.src / "pkg" / "shot.png").write_bytes(self.image)
+        self.refused("pkg/shot.png: not UTF-8")
+
+    def test_wrong_digest_and_bytes_changed_after_planning_are_refused(self):
+        other = tiny_png(width=4)
+        self.refused("differs from the reviewed digest", reviewed_images={self.IMAGE: self.approval(other)})
+        # The digest is checked on the bytes actually read: a valid PNG swapped in after planning is refused.
+        with mock.patch.object(export_release, "_checkpoint",
+                               lambda stage: stage == "planned" and (self.src / self.IMAGE).write_bytes(other)):
+            self.refused(f"{self.IMAGE}: SHA-256 of the bytes read differs")
+        (self.src / self.IMAGE).write_bytes(self.image)
+        with mock.patch.object(export_release, "_checkpoint",
+                               lambda stage: stage == "scanned" and (self.src / self.IMAGE).write_bytes(other)):
+            self.refused(f"'{self.IMAGE}': the source changed during the export")
+
+    def test_unsafe_or_misplaced_image_paths_are_refused_before_reading(self):
+        reached = self.stages()
+        for dest, fragment in (("../screen.png", "not a safe relative path"),
+                               ("/docs/media/screen.png", "not a safe relative path"),
+                               ("docs/media/../screen.png", "not a safe relative path"),
+                               ("artifacts/media/screen.png", "excluded 'artifacts'"),
+                               ("docs/screen.png", "must be a .png file under 'docs/media/'"),
+                               ("docs/mediax/screen.png", "must be a .png file under 'docs/media/'"),
+                               ("docs/media/screen.PNG", "must be a .png file under 'docs/media/'"),
+                               ("docs/media/screen.jpg", "must be a .png file under 'docs/media/'"),
+                               ("docs/media/.png", "must be a .png file under 'docs/media/'")):
+            with self.subTest(dest):
+                self.refused(fragment, reviewed_images={dest: self.approval()})
+        self.assertEqual(reached, [], "every path refusal happened before any content was read")
+
+    def test_missing_unexported_unsafe_or_binary_provenance_is_refused(self):
+        self.refused("provenance 'docs/MEDIA.md' is not an exported file", files=["notes.txt", self.IMAGE])
+        self.refused("provenance 'docs/GONE.md' is not an exported file",
+                     reviewed_images={self.IMAGE: self.approval(provenance="docs/GONE.md")})
+        self.refused("not a safe relative path", reviewed_images={self.IMAGE: self.approval(provenance="../MEDIA.md")})
+        self.refused("excluded 'artifacts'",
+                     reviewed_images={self.IMAGE: self.approval(provenance="artifacts/private.log")})
+        self.refused("must be a text document, not a reviewed image",
+                     reviewed_images={self.IMAGE: self.approval(provenance=self.IMAGE)})
+        (self.src / "docs" / "MEDIA.md").write_bytes(b"\xff\xfe review notes\n")
+        self.refused(f"{self.IMAGE}: provenance 'docs/MEDIA.md' is not UTF-8 text")
+
+    def test_malformed_duplicate_and_unused_approvals_are_refused(self):
+        good = self.approval()
+        for approvals, fragment in (([self.IMAGE], "reviewed_images must be an object"),
+                                    ({self.IMAGE: good["sha256"]}, "the approval must be an object"),
+                                    ({self.IMAGE: {"sha256": good["sha256"]}}, "must have exactly the keys"),
+                                    ({self.IMAGE: dict(good, reviewer="me")}, "must have exactly the keys"),
+                                    ({self.IMAGE: dict(good, sha256=good["sha256"].upper())}, "64 lowercase hex"),
+                                    ({self.IMAGE: dict(good, sha256=good["sha256"][:63])}, "64 lowercase hex"),
+                                    ({self.IMAGE: dict(good, sha256=None)}, "64 lowercase hex"),
+                                    ({self.IMAGE: good, "docs/media/Screen.png": good}, "differ only in case"),
+                                    ({self.IMAGE: good, "docs/media/other.png": good},
+                                     "'docs/media/other.png' is not an exported file; the approval is unused")):
+            with self.subTest(fragment):
+                self.refused(fragment, reviewed_images=approvals)
+        # An approval for an optional file that is absent is unused too.
+        (self.src / self.IMAGE).unlink()
+        self.refused("approval is unused", files=["notes.txt", "docs/MEDIA.md"], optional_files=[self.IMAGE])
+        (self.src / self.IMAGE).write_bytes(self.image)
+        # Duplicate JSON keys (silently last-wins in json.load) are refused, for the image and for approval keys.
+        entry, image, digest = json.dumps(good), json.dumps(self.IMAGE), json.dumps(good["sha256"])
+        twice = "{" + f"{image}: {entry}, {image}: {entry}" + "}"
+        key_twice = "{" + f'{image}: {entry[:-1]}, "sha256": {digest}' + "}}"
+        for raw, fragment in ((twice, "approved more than once"),
+                              (key_twice, "approval key 'sha256' is given more than once")):
+            with self.subTest(fragment):
+                text = json.dumps(dict(self.manifest, reviewed_images="@@")).replace('"@@"', raw)
+                (self.src / "manifest.json").write_text(text)
+                with self.assertRaises(export_release.Refused) as caught:
+                    export_release.check(str(self.src), str(self.src / "manifest.json"))
+                self.assertTrue(any(fragment in p for p in caught.exception.problems), caught.exception.problems)
+
+    def test_metadata_ancillary_and_palette_chunks_are_refused(self):
+        for kind, body in ((b"tEXt", b"Comment\x00hello"), (b"iTXt", b"XML:com.adobe.xmp\x00\x00\x00\x00\x00x"),
+                           (b"eXIf", b"MM\x00*"), (b"tIME", b"\x07\xea\x0a\x10\x00\x00\x00"),
+                           (b"pHYs", b"\x00\x00\x0b\x13\x00\x00\x0b\x13\x01"), (b"PLTE", b"\x00\x00\x00")):
+            for where in ("before_idat", "after_idat"):
+                with self.subTest(kind=kind, where=where):
+                    data = tiny_png(**{where: [png_chunk(kind, body)]})
+                    self.refused(f"chunk {kind.decode()} is not permitted",
+                                 reviewed_images=self.approve(data))
+        rows = b"\x00\x00\x00\x00" * 2
+        self.refused("colour type 3 is not permitted", reviewed_images=self.approve(tiny_png(colour=3, rows=rows)))
+
+    def test_truncated_corrupt_and_trailing_png_bytes_are_refused(self):
+        good = self.image
+        flipped = bytearray(good)
+        flipped[45] ^= 0x01  # inside the IDAT data: the CRC no longer matches
+        ihdr = png_chunk(b"IHDR", struct.pack(">IIBBBBB", 3, 2, 8, 2, 0, 0, 0))
+        iend = png_chunk(b"IEND", b"")
+        idat = png_chunk(b"IDAT", zlib.compress(b"\x00" * 10))
+        rows = b"".join(b"\x00" + b"\x01\x02\x03" * 3 for _ in range(2))
+        whole = zlib.compress(rows)
+        cases = {
+            "truncated": (good[:-5], "truncated chunk"),
+            "no IEND": (good[:-12], "no IEND chunk"),
+            "bad CRC": (bytes(flipped), "bad CRC"),
+            "trailing bytes": (good + b"\x00", "1 byte(s) after IEND"),
+            "bad signature": (b"\x89PNX" + good[4:], "no PNG signature"),
+            "IHDR not first": (export_release.PNG_SIGNATURE + idat + ihdr + iend, "IHDR must be the first chunk"),
+            "two IHDR": (export_release.PNG_SIGNATURE + ihdr + ihdr + idat + iend, "IHDR must be the first chunk"),
+            "no IDAT": (export_release.PNG_SIGNATURE + ihdr + iend, "no IDAT chunk"),
+            "zero width": (tiny_png(width=0, rows=b"\x00\x00"), "outside 1..16384"),
+            "too tall": (tiny_png(height=16385, rows=b""), "outside 1..16384"),
+            "short data": (export_release.PNG_SIGNATURE + ihdr + idat + iend, "decompresses to 10 bytes"),
+            "long data": (tiny_png(rows=rows + b"\x00"), "more than the 20 bytes"),
+            "not zlib": (export_release.PNG_SIGNATURE + ihdr + png_chunk(b"IDAT", b"not zlib") + iend,
+                         "not a valid zlib stream"),
+            "incomplete zlib": (export_release.PNG_SIGNATURE + ihdr + png_chunk(b"IDAT", whole[:-6]) + iend,
+                                "incomplete"),
+            "IDAT after IEND": (export_release.PNG_SIGNATURE + ihdr + png_chunk(b"IDAT", whole[:5])
+                           + png_chunk(b"IEND", b"") + png_chunk(b"IDAT", whole[5:]), "after IEND"),
+        }
+        for name, (data, fragment) in cases.items():
+            with self.subTest(name):
+                self.refused(fragment, reviewed_images=self.approve(data))
+        # Positive control: an exact, interlaced and multi-IDAT image is accepted.
+        interlaced_rows = b"".join(b"\x00" + b"\x05\x06\x07" for _ in range(1))  # Adam7 pass 1 only (1x1 image)
+        interlaced = (export_release.PNG_SIGNATURE + png_chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 1))
+                      + png_chunk(b"IDAT", zlib.compress(interlaced_rows)) + iend)
+        split = (export_release.PNG_SIGNATURE + ihdr + png_chunk(b"IDAT", whole[:5]) + png_chunk(b"IDAT", whole[5:])
+                 + iend)
+        for name, data in (("interlaced", interlaced), ("split", split)):
+            with self.subTest(name):
+                self.assertEqual(export_release.png_structure(data), (1, 1) if name == "interlaced" else (3, 2))
+                self.export(f"release/{name}", reviewed_images=self.approve(data))
+
+    def test_reviewed_png_bytes_are_still_scanned_for_credentials(self):
+        secret = ("sk-ant-" + "c" * 24).encode()
+        width = len(secret) // 3 + 1
+        rows = b"\x00" + secret.ljust(width * 3, b"x")
+        data = tiny_png(width=width, height=1, rows=rows, level=0)  # stored (uncompressed) zlib block
+        self.assertIn(secret, data)
+        self.refused(f"{self.IMAGE}: matches anthropic-key", reviewed_images=self.approve(data))
+
+    def test_alpha_16_bit_and_sub_byte_samples_are_refused(self):
+        """Only 8-bit greyscale/RGB: alpha and 16-bit samples can carry bytes a visual review never sees."""
+        hidden = b"/Users/someone/private/path/"
+        width = len(hidden) // 3 + 1
+        payload = hidden.ljust(width * 3, b"/")
+
+        def png(depth, colour, rows, w=width):
+            ihdr = png_chunk(b"IHDR", struct.pack(">IIBBBBB", w, 1, depth, colour, 0, 0, 0))
+            return export_release.PNG_SIGNATURE + ihdr + png_chunk(b"IDAT", zlib.compress(rows, 9)) + png_chunk(
+                b"IEND", b"")
+
+        # Fully transparent RGBA pixels whose RGB values carry the payload: renders as nothing, hides the bytes.
+        rgba = b"\x00" + b"".join(payload[i:i + 3] + b"\x00" for i in range(0, len(payload), 3))
+        # 16-bit RGB whose low bytes carry the payload under black high bytes.
+        rgb16 = b"\x00" + b"".join(b"\x00" + bytes((c,)) for c in payload)
+        cases = {"RGBA transparent": (png(8, 6, rgba), "colour type 6 is not permitted"),
+                 "grey+alpha": (png(8, 4, b"\x00" + payload[:width * 2], w=width), "colour type 4 is not permitted"),
+                 "RGB 16-bit": (png(16, 2, rgb16), "bit depth 16 is not permitted"),
+                 "grey 16-bit": (png(16, 0, b"\x00" + payload[:width * 2]), "bit depth 16 is not permitted"),
+                 "grey 1-bit": (png(1, 0, b"\x00" + bytes((width + 7) // 8)), "bit depth 1 is not permitted")}
+        for name, (data, fragment) in cases.items():
+            with self.subTest(name):
+                self.assertNotIn(hidden, data)  # compressed: the raw-byte pattern scan alone could not see it
+                self.refused(fragment, reviewed_images=self.approve(data))
+        # Positive controls: 8-bit greyscale and the RGB 8-bit default are accepted.
+        grey = png(8, 0, b"\x00" + bytes(range(width)))
+        self.assertEqual(export_release.png_structure(grey), (width, 1))
+        self.export("release/grey", reviewed_images=self.approve(grey))
+        self.assertEqual(export_release.png_structure(self.image), (3, 2))
+
+    def test_duplicate_top_level_reviewed_images_key_is_refused_before_reading(self):
+        good = json.dumps({self.IMAGE: self.approval()})
+        reached = self.stages()
+        for first, second in ((good, "{}"), ('{"docs/media/bogus.png": 1}', good), (good, good)):
+            with self.subTest(first=first, second=second):
+                text = json.dumps(dict(self.manifest, reviewed_images="@@"))
+                text = text[:-1] + ', "reviewed_images": "@@"}'
+                text = text.replace('"@@"', first, 1).replace('"@@"', second, 1)
+                self.assertEqual(text.count('"reviewed_images"'), 2)
+                (self.src / "manifest.json").write_text(text)
+                with self.assertRaises(export_release.Refused) as caught:
+                    export_release.export(str(self.src), str(self.src / "manifest.json"),
+                                          str(self.src / "release" / "dup"))
+                self.assertTrue(any("reviewed_images is given more than once" in p for p in caught.exception.problems),
+                                caught.exception.problems)
+                self.assertFalse((self.src / "release" / "dup").exists())
+        self.assertEqual(reached, [], "the duplicate key is refused before any content is read")
+        # Unchanged: another duplicated top-level key keeps json's last-wins value, and a manifest without
+        # reviewed_images keeps the text-only behaviour.
+        text_only = {k: v for k, v in dict(self.manifest, files=["notes.txt"]).items() if k != "reviewed_images"}
+        (self.src / "manifest.json").write_text(json.dumps(text_only)[:-1] + ', "max_file_bytes": 1000}')
+        summary = export_release.check(str(self.src), str(self.src / "manifest.json"))
+        self.assertEqual(summary["files"], 4)
+        self.assertNotIn("reviewed_images", summary)
+
+    def test_cli_states_the_limits_of_the_image_checks(self):
+        (self.src / "manifest.json").write_text(json.dumps(self.manifest))
+        args = ["--manifest", str(self.src / "manifest.json"), "--source", str(self.src)]
+        for argv in (["--check"], ["--output", str(self.src / "release" / "cli")]):
+            with self.subTest(argv[0]):
+                out = io.StringIO()
+                with contextlib.redirect_stdout(out):
+                    self.assertEqual(export_release.main(argv + args), 0)
+                line = [x for x in out.getvalue().splitlines() if x.startswith("reviewed PNG images: 1 (")]
+                self.assertEqual(len(line), 1, out.getvalue())
+                for claim in ("pixels are not inspected", "no decoding, OCR or steganography check",
+                              "does not see compressed image data", "externally decoded and visually reviewed"):
+                    self.assertIn(claim, line[0])
+        doc = export_release.__doc__
+        for claim in ("does not decode or inspect pixels", "no\nOCR or steganography", "filter bytes are not validated",
+                      "certifies nothing about secrets"):
+            self.assertIn(claim, doc)
+        # The documented limit, pinned: a credential inside compressed image data is not found by the byte scan.
+        secret = ("sk-ant-" + "c" * 24).encode()
+        width = len(secret) // 3 + 1
+        data = tiny_png(width=width, height=1, rows=b"\x00" + secret.ljust(width * 3, b"x"), level=9)
+        self.assertNotIn(secret, data)
+        self.assertEqual(export_release.scan({self.IMAGE: (data, False), "docs/MEDIA.md": (b"notes\n", False)},
+                                             export_release.SECRET_PATTERNS, {self.IMAGE: self.approval(data)}), [])
 
 
 @unittest.skipUnless(shutil.which("git"), "git is not on PATH")

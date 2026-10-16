@@ -70,5 +70,5 @@ Give each executor:
 
 - Run the focused tests for what you touched and record the exact commands and counts. The orchestrator runs the full suite (`python -m unittest discover -s tests -p 'test_*.py'`, with CAD and `SKID_BLENDER`), the Node unit tests, and relevant browser scenarios.
 - Update the user-facing docs that describe changed behaviour, using only behaviour you have actually observed.
-- Do not push, create a public repository, release a package or archive, or otherwise publish externally without the owner's approval ([agent instructions](../AGENTS.md#repository-status)). The tool's local publication of verified outputs (`<stem>.workflow/current.json`, `<stem>.skid/current.json`) is normal workflow and is not affected.
+- Do not push, create a repository, release a package or archive, or otherwise publish externally without the owner's explicit authorisation ([agent instructions](../AGENTS.md#repository-status)). Do not change licence files, SPDX headers or the [licence mapping](LICENSING.md) without the owner's decision. The tool's local publication of verified outputs (`<stem>.workflow/current.json`, `<stem>.skid/current.json`) is normal workflow and is not affected.
 - Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for the pull-request checklist. An AI review is not engineering sign-off ([engineering review](ENGINEERING_REVIEW.md)).

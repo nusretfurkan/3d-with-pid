@@ -1,0 +1,25 @@
+3d-with-pid
+Copyright (c) 2026 nusretfurkan
+
+Project-authored material is licensed under the MIT License (see LICENSE),
+except the Blender integration files listed in docs/LICENSING.md, which are
+licensed under the GNU General Public License v3.0 or later
+(see LICENSES/GPL-3.0-or-later.txt).
+
+Third-party material included in this repository:
+
+  Three.js r170 (web/vendor/three/), MIT License,
+  Copyright © 2010-2024 three.js authors.
+  Included unmodified; its license is in web/vendor/three/LICENSE.
+
+Separate tools used, not included:
+
+  Blender (https://www.blender.org) is free software from the Blender
+  project, distributed under the GNU General Public License. This project's
+  optional offline Blender output path runs a separately installed Blender.
+  Blender is not part of this repository and did not contribute to it. This
+  project is not affiliated with, sponsored by or endorsed by the Blender
+  Foundation or the Blender project.
+
+Other dependencies are installed separately by users under their own terms;
+see THIRD_PARTY_NOTICES.md.

@@ -2,7 +2,13 @@
 
 ## Reporting
 
-This repository has no public contact address or advisory process yet. It is a private review candidate, and setting up a private reporting contact is an owner decision to be made before any external release. Report a suspected vulnerability privately to the repository owner through the hosting platform's private channel (for example a private security advisory, if it is enabled). Do not open a public issue. Include the commit, platform, steps to reproduce and impact, and leave out secrets or personal data.
+Report a suspected vulnerability privately through GitHub's private vulnerability reporting:
+
+1. Open <https://github.com/nusretfurkan/3d-with-pid/security/advisories/new>, or go to the repository's **Security** tab and choose **Report a vulnerability**.
+2. Describe the issue: the affected commit, your platform, steps to reproduce, and the impact you observed.
+3. Leave out secrets, credentials and personal or client data. If a proof of concept needs a project file, use the synthetic example or a minimal file you are allowed to share.
+
+Please do not open a public issue, pull request or discussion for a suspected vulnerability. There is no separate e-mail contact.
 
 ## Intended deployment
 

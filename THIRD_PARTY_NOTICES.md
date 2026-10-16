@@ -2,7 +2,7 @@
 
 Recorded 2026-10-16. This file lists third-party material that this repository contains or depends on. It is an audit record, not legal advice. Package-declared license metadata can be incomplete; uncertain entries are marked.
 
-**Project license:** the owner has not chosen a license yet, and the repository deliberately has no `LICENSE` file. Until a license is chosen, nothing in this file grants rights to the project's own code, documents, symbols or examples.
+**Project license:** project-authored material is licensed under the MIT License ([`LICENSE`](LICENSE)), except seven Blender integration files licensed under GPL-3.0-or-later ([`LICENSES/GPL-3.0-or-later.txt`](LICENSES/GPL-3.0-or-later.txt)); see [section 4](#4-blender-python-api-gpl-exceptions) and [docs/LICENSING.md](docs/LICENSING.md). The images and the P&ID SVG in `docs/media/` are original project output generated from the synthetic example ([provenance](docs/media/PROVENANCE.md)); they are project material under MIT, not third-party material. This file covers third-party material only and grants no rights in it.
 
 ## 1. Material included in this repository
 
@@ -85,13 +85,13 @@ The repository distributes source only, with no OCCT object code. This notice is
 
 | Tool | Observed version | Terms | Use |
 | --- | --- | --- | --- |
-| Blender | 5.1.1 | GPL-3.0-or-later | Optional offline 3D adapter. See the Blender section below. |
+| Blender | 5.1.1 | GPL-3.0-or-later | Optional offline 3D output, run as a separate program. See the Blender section below. |
 | Playwright (`@playwright/test`, `playwright`, `playwright-core`) | 1.58.2 | Apache-2.0, with `NOTICE` (Microsoft; Puppeteer-derived code) and `ThirdPartyNotices.txt` in the packages | Optional browser tests only. Downloaded browser binaries carry their own terms. |
 | fsevents | 2.3.2 | MIT | Optional macOS transitive dependency of Playwright. |
 | Node.js | 22.x | Node.js license | Optional browser unit/e2e tests. No frontend build step. |
 | Claude Code CLI | 2.1.301 observed | Proprietary: "© Anthropic PBC. All rights reserved. Use is subject to Anthropic's Commercial Terms of Service." | Optional external model service for Ask, engineering plan and research modes. Users install and authenticate it themselves. It is not bundled, and project context leaves the machine only when those modes are used. |
 
-## 4. Blender Python API: open distribution question
+## 4. Blender Python API: GPL exceptions
 
 Blender's [FAQ](https://www.blender.org/support/faq/) states that published scripts calling the Blender Python API must be made available under the GNU GPL. Its separate-program exception requires, among other conditions, that the product contain no Blender API calls. These project files call `bpy` or `mathutils` directly:
 
@@ -100,9 +100,11 @@ Blender's [FAQ](https://www.blender.org/support/faq/) states that published scri
 - `skid/adapters/blender_support/preview.py`
 - `tests/blender_smoke.py`
 
-These files load them inside Blender: `skid/adapters/blender.py` (a deferred import of `scene` and a `bpy` availability check) and `skid/adapters/blender_support/run_build.py`. `skid/adapters/blender_support/plan.py` and `geometry.py` do not import `bpy`.
+These files load them inside Blender: `skid/adapters/blender.py` (a deferred import of `scene` and a `bpy` availability check) and `skid/adapters/blender_support/run_build.py`. `tests/test_geometry_contract.py` contains a test that imports `skid.adapters.blender`. `skid/adapters/blender_support/plan.py` and `geometry.py` do not import `bpy`.
 
-**Until the owner decides, distribution terms for this code are an explicit publication blocker.** Running Blender as a separate subprocess is not asserted to resolve the question.
+**Licence decision (owner, 2026-10-16):** these seven files are licensed under GPL-3.0-or-later and carry `SPDX-License-Identifier: GPL-3.0-or-later`. Everything else authored for this project, including `skid/adapters/blender_support/{__init__,plan,geometry}.py`, `skid/build.py` and `scripts/check_blender.sh`, is MIT. The normal CLI and service read adapter constants from the MIT `plan.py` and start Blender as a separate program; they do not import a GPL file. Running Blender as a separate subprocess is not asserted to change the terms of the GPL files themselves. The details and their limits are in [docs/LICENSING.md](docs/LICENSING.md); this is a reasoned assessment, not a legal opinion.
+
+**Credit.** Blender (<https://www.blender.org>) is free software from the Blender project, used here as a separately installed tool for the optional offline output. It is not included in this repository, did not contribute to it, and does not endorse it. No Blender logo or trademark artwork is included.
 
 ## 5. Research links and references
 

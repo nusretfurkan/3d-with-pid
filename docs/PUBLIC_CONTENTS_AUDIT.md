@@ -1,5 +1,7 @@
 # Public contents audit and release gate
 
+> **Historical record, kept unchanged in substance.** This is the initial, pre-fix audit from the start of repository preparation. Its "not ready" status, findings and gate items describe that moment, not the current state. In particular, the gate's licence, Blender-terms, fixture and security-contact items were owner decisions then pending; the owner decided them on 2026-10-16 (MIT with GPL-3.0-or-later Blender exceptions per [LICENSING.md](LICENSING.md), retained fixtures approved, GitHub private vulnerability reporting), so they are not current blockers. Statements below such as "the project license is undecided" are historical. The recorded failures are kept as they were. Nothing here records an independent engineering or legal review. The current state, including the final verification, is in [REPOSITORY_ASSESSMENT.md](REPOSITORY_ASSESSMENT.md).
+
 Initial audit: 2026-10-16. It covers the **source paths and proposed boundary** of the curated release candidate. The generated export (`release/github/`) did not exist at audit time. It needs a separate review against this document before any publication. This is not legal advice, and no professional engineering sign-off is implied.
 
 Status: **NOT READY TO PUBLISH EXTERNALLY.** The gate in section 6 fails closed.
