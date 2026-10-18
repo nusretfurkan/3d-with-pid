@@ -23,6 +23,26 @@ Do not send client, vendor or otherwise confidential project data to an external
 
 ## Developing the tool
 
+### Starting a fresh development agent
+
+Copy as is:
+
+```text
+Read AGENTS.md, then HANDOVER.md, then docs/GETTING_STARTED.md. Do not push, publish externally
+or change licence terms. Set up a new Python 3.12 environment (.venv-cad) with requirements-cad.txt. If Node.js 22
+is available, run `npm ci` and then `npx playwright install chromium`; npm ci alone does not
+download the browser. Before changing anything, run these and report the exact counts and every
+skip with its reason. Run the full Python suite first without SKID_BLENDER set:
+  python -m unittest discover -s tests -p 'test_*.py'
+  python scripts/reference.py --output work/agent-check/reference-cad --cad
+  node --test "tests/browser/unit/*.test.mjs"
+  node tests/browser/workflow.e2e.mjs
+The reference output directory must be new or empty; if it exists, report that instead of
+deleting it. If Blender is installed, also run
+SKID_BLENDER=/path/to/blender sh scripts/check_blender.sh; otherwise report the Blender lane as
+not run. Never weaken a test or report a skipped lane as passed. Then wait for a bounded task.
+```
+
 ### Division of work
 
 The maintainers use this division, and agents contributing to this repository should follow it:

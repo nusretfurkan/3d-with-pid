@@ -1,1 +1,8 @@
 blank_issues_enabled: false
+contact_links:
+  - name: Questions, ideas and test cases
+    url: https://github.com/nusretfurkan/3d-with-pid/discussions
+    about: Ask how something works or share a change case you want to try.
+  - name: Pilots, consulting or custom equipment generators
+    url: https://calendar.app.google/KRXf9SM88DWTQ7yi6
+    about: Book an introduction call, or e-mail nusret@processengineer.io.

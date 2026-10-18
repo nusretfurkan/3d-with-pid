@@ -50,6 +50,42 @@ Generating an empty project completes truthfully: `scene.json` with no component
 
 Because it has four ports, it cannot be inserted inline; add it with `add_equipment` and wire it with `connect_ports`. Drafting and Ask keep its two circuits separate ([equipment](EQUIPMENT.md#definition-document), [Ask](ASK.md#declared-flow-paths)).
 
+### Complete `add_equipment` example for composed equipment
+
+The command embeds the whole definition, repeats every recipe parameter with provenance and lists one record per declared port. This script builds it from the shell-and-tube definition with its default values, places the exchanger at the origin and leaves its four ports unresolved. Run it from the repository root; it needs only the standard library.
+
+```sh
+mkdir -p work/hx
+python -m skid.cli new work/hx/project.json --name "Exchanger sketch"         # revision 0, empty
+python - <<'EOF'
+import json
+d = json.load(open("examples/recipes/shell_and_tube_exchanger.definition.json"))
+A = "asm-hx-101"
+command = {
+    "id": "cmd-add-hx-101", "expected_revision": 0, "type": "add_equipment",
+    "assumptions": {A: {"description": "Illustrative exchanger: recipe default dimensions, DN50 liquid ports, "
+                                       "placed at the origin. Duty and design are unknown.",
+                        "source": "docs/EMPTY_START.md example"}},
+    "payload": {
+        "entity": {"id": "ent-hx-101", "kind": "composed_equipment", "tag": "HX-101", "template_version": 1,
+                   "definition": d,
+                   "parameters": {name: {"value": rec["value"], "unit": "m", "assumption_id": A}
+                                  for name, rec in d["geometry"]["parameters"].items()}},
+        "ports": [{"id": "port-hx-101-" + name.replace("_", "-"), "entity_id": "ent-hx-101", "name": name,
+                   "direction": port["direction"], "required": port["required"], "nominal_diameter_mm": 50,
+                   "service": "liquid", "assumption_id": A} for name, port in d["ports"].items()],
+        "symbol": {"id": "sym-hx-101", "entity_id": "ent-hx-101", "x": 300.0, "y": 300.0,
+                   "rotation_deg": 0.0, "manual": False},
+        "placement": {"position_m": [0.0, 0.0, 0.0], "rotation_deg": [0.0, 0.0, 0.0], "status": "placed",
+                      "manual": False, "assumption_id": A}}}
+json.dump(command, open("work/hx/add-hx-101.json", "w"), indent=1)
+EOF
+python -m skid.cli apply work/hx/project.json work/hx/add-hx-101.json       # revision 1
+python -m skid.cli validate work/hx/project.json; echo "exit $?"            # exit 3: four ports explicitly unresolved
+```
+
+For a definition of your own, change the file path, IDs, tag and assumption text. `connect_ports` then joins the open ports to other equipment.
+
 ## Limits
 
 DN50 liquid service only. Built-in templates have no optional ports. The guided P&ID edge is a simple Z rule; layouts with ports on the far side of a symbol need manual edge points. No thermal, hydraulic, mechanical, code or vendor verification of any example.
