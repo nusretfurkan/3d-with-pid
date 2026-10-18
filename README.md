@@ -1,6 +1,6 @@
 # 3d-with-pid
 
-A small, MIT-licensed reference that generates the P&ID and the 3D/STEP model of an equipment package from one engineering model, keeps permanent IDs apart from editable tags and marks any drawing or model it cannot update as pending.
+A small, MIT-licensed prototype project that generates the P&ID and the 3D/STEP model of an equipment package from one engineering model, keeps permanent IDs apart from editable tags and marks any drawing or model it cannot update as pending.
 
 ![Isometric 3D view of the example pump skid: tank TK-101, isolation valves HV-101 and HV-102, pump P-101, check valve NRV-101, indicators LI-101 and PI-101, and outlet boundary OUT-101, with line tags](docs/media/pump-skid.png)
 
@@ -9,22 +9,6 @@ In most plant design tools the P&ID and the 3D model are two datasets: "changes 
 ## What a change looks like
 
 Rename the pump, then move it 0.2 m. The tag changes in every output and the ID `ent-pump` stays. The two pump lines go pending with their old points kept; the P&ID layout is untouched. New routes make the model current again.
-
-```text
-$ python -m skid.cli rename work/skid.json ent-pump P-201 --expected-revision 0
-accepted rename_entity …: revision 0 -> 1
-
-$ python -m skid.cli apply work/skid.json work/move.json         # move_equipment, +0.2 m in x
-  WARNING [route_invalidated] physical route conn-discharge-1 is needs_reroute: equipment ent-pump placement changed …
-  WARNING [route_invalidated] physical route conn-suction-2 is needs_reroute: equipment ent-pump placement changed …
-
-$ python -m skid.cli validate work/skid.json
-VALID BUT INCOMPLETE: no structural errors; 2 open item(s) … A build will be published as pending.   [exit 3]
-
-$ python -m skid.cli apply work/skid.json work/reroute.json      # both routes in one batch
-$ python -m skid.cli validate work/skid.json
-VALID: no structural errors and no open presentation items (a model consistency check, not a process-design check).   [exit 0]
-```
 
 *Real output, shortened. Command files: [walkthrough](docs/REFERENCE_EXAMPLE.md#hands-on-edits-standard-library-only).*
 
@@ -36,7 +20,7 @@ Each revision produces five outputs: the 3D view, STEP CAD, the P&ID sheet, a le
 
 ## Status and limits
 
-Engineering prototype, released as is. No further development is planned unless a client asks for it.
+Engineering prototype, released as is. No further development is planned unless it is specifically asked.
 
 - Every dimension in the examples is an illustrative assumption. No independent engineering review or sign-off is recorded ([criteria](docs/ENGINEERING_REVIEW.md)).
 - Nothing here is a process design, a fabrication drawing or a claim of ISA-5.1, ISO 10628 or other standards conformance.
@@ -47,9 +31,9 @@ Engineering prototype, released as is. No further development is planned unless 
 
 I'm Nusret Furkan, a process engineer and co-founder of [Plexus](https://processengineer.io). At Plexus we build AI tools for process and safety engineering teams: they pull values from project documents, trace each one to its source and check them for conflicts across revisions. I built 3d-with-pid to test a related idea on P&ID and 3D consistency.
 
-- **Pilot (paid, scoped per case).** We model one equipment package you already have and run your usual change cases: rename, insert a valve, move equipment, change a nozzle. You see what stays consistent, what goes pending and where the tool stops.
-- **Consulting** on P&ID and 3D consistency, engineering data models and change workflows in your current toolchain.
-- **Custom equipment generators** for your equipment types, each with named ports, a P&ID symbol, 3D/STEP geometry and recorded assumptions.
+- Pilot of existing tools/products (paid, scoped per case).
+- Consulting
+- Custom product development
 
 [nusret@processengineer.io](mailto:nusret@processengineer.io) · [LinkedIn](https://www.linkedin.com/in/nusretfurkan) · [Book an introduction call](https://calendar.app.google/KRXf9SM88DWTQ7yi6) · Questions and test cases: [Discussions](https://github.com/nusretfurkan/3d-with-pid/discussions)
 
